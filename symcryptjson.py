@@ -1,9 +1,8 @@
 
 from cryptography.fernet import Fernet
-import cryptography
 import json
 import hashlib, rsa
-import hmac
+import SigningPhase
 import os, subprocess
 def encryptjson(key,data_string):
     #start = timeit.default_timer()
@@ -29,9 +28,7 @@ def encryptjson(key,data_string):
     #rename encrypted symkey file to be able to read the file
     p = subprocess.call(["mv", "{}_key.txt.cpabe".format(id), "{}_key.txt".format(id)])
     #-----Begin Signing Phase------
-    CT_MD = hashlib.sha256(CT_byte).hexdigest()
-    #encrypt with RSA to achieve DS
-    DS = rsa.encrypt(CT_MD, )
+    DS = SigningPhase.Sign(CT_byte)
     #read the encrypted SymKey
     with open('{}_key.txt'.format(id),'rb') as file:
         enc_Symkey = file.read()
