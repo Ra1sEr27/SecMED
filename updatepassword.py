@@ -1,7 +1,7 @@
-import symcrytjson,pymongo,json,os
+import symcryptjson,pymongo,json,os
 def updatepassword(wanteddoc,decdoc,hashedpassword,key):
     decdoc["password"] = hashedpassword
-    updated_encypted_doc = symcrytjson.encryptjson(key,json.dumps(decdoc),"")
+    updated_encypted_doc = symcryptjson.encryptjson(key,json.dumps(decdoc),"")
     updated_decdoc_string_sorted = json.dumps(decdoc, indent = 3)
     client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
     db = client['Hospital'] #connect to db

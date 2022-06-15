@@ -2,8 +2,9 @@
 from multiprocessing.sharedctypes import Value
 from cryptography.fernet import Fernet
 import json
-import symcrytjson
+import symcryptjson
 import pymongo
+import keygenerator
 def insertpatient():
     # connect to MongoDB
     client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
@@ -47,11 +48,10 @@ def insertpatient():
     doc_string = json.dumps(doc)
     doc_sorted = json.dumps(doc, indent = 3)
     print("Document: \n", doc_sorted)
-
-    with open('DataOwner.key','rb') as file:
-         key = file.read()
+    #generate Symkey
+    symkey = keygenerator.symkeygenerator(patient_id)
     #encrypt the document
-    doc_encrypted = symcrytjson.encryptjson(key,doc_string) 
+    doc_encrypted = symcryptjson.encryptjson(symkey,doc_string) 
     doc_encrypted_sorted = json.dumps(doc_encrypted, indent = 3)
     
     print("Encrypted document: \n", doc_encrypted_sorted)

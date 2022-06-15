@@ -5,7 +5,7 @@ from pymongo import MongoClient
 import pymongo
 import os
 import findDoc
-import symcrytjson
+import symcryptjson
 import hmac, hashlib
 import getpass
 
@@ -16,7 +16,7 @@ def updatestaff(key,staffdb,staffid):
             print("The document is not existed")
             return 0
             
-        decdoc = symcrytjson.decryptjson(key,wanteddoc)
+        decdoc = symcryptjson.decryptjson(key,wanteddoc)
         decdoc_lite = {"name": "{}".format(decdoc["name"]), "password": "{}".format(decdoc["password"]), "role": "{}".format(decdoc["role"]), "accessdb": "{}".format(decdoc["accessdb"])}
         decdoc_sorted = json.dumps(decdoc_lite,indent = 6)
         print("{}'s document: \n{}".format(staffid,decdoc_sorted))
@@ -71,7 +71,7 @@ def updatestaff(key,staffdb,staffid):
                     edited_decdoc_string = json.dumps(decdoc)
                     edited_decdoc_string_sorted = json.dumps(decdoc,indent = 3)
                     #encrypt the edited document
-                    encrypted_edited_decdoc = symcrytjson.encryptjson(key,edited_decdoc_string,"")
+                    encrypted_edited_decdoc = symcryptjson.encryptjson(key,edited_decdoc_string,"")
 
                     #reindent the edited document
                     edited_decdoc_sorted = json.dumps(decdoc, indent = 6)
