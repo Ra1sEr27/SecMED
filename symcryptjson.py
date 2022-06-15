@@ -3,7 +3,7 @@ from cryptography.fernet import Fernet
 import json
 import hashlib, rsa
 import SigningPhase
-import os, subprocess, cpabe
+import os, subprocess, cpabe, keygenerator
 def encryptjson(data_string):
     #start = timeit.default_timer()
     #--------Begin Encryption Phase----------
@@ -16,9 +16,10 @@ def encryptjson(data_string):
     data_byte = str.encode(data_string)
     # convert pname to byte format
     id_byte = str.encode(id)
-    #import Symkey
-    with open('{}_key.txt'.format(id),'rb') as file:
-        symkey = file.read()
+    #generate Symkey
+    symkey = keygenerator.symkeygenerator(id)
+    with open('{}_key.txt'.format(id),'wb') as file:
+        file.write(symkey)
     # this encrypts the data read from your json and stores it in 'encrypted'
     fernet = Fernet(symkey)
     CT_byte= fernet.encrypt(data_byte)
@@ -29,11 +30,12 @@ def encryptjson(data_string):
     #encrypt SymKey with CP-ABE PubKey
     cpabe.encrypt(id)
     
-    print("test")
     #rename encrypted symkey file to be able to read the file
     p = subprocess.call(["mv", "{}_key.txt.cpabe".format(id), "{}_key.txt".format(id)])
+    
     #-----Begin Signing Phase------
     DS_XOR_R, R1 = SigningPhase.Sign(CT_byte)
+
     #read the encrypted SymKey
     with open('{}_key.txt'.format(id),'rb') as file:
         enc_Symkey = file.read()
@@ -46,7 +48,7 @@ def encryptjson(data_string):
     'DS*R': '{}'.format(DS_XOR_R), 'R1': '{}'.format(R1)}
     #stop = timeit.default_timer()
     #print('Enc Time: ', stop - start)
-    print(doc)
+    #print(doc)
     return doc
 
 def decryptjson(key,doc):
@@ -79,8 +81,8 @@ def decryptjson(key,doc):
     return decdoc
 #test code
 
-with open('/home/nontawat/SecMED/Patients/p0000_Intira Preecha.json','r') as file:
-        pdoc = file.read()
-#pdoc_string = json.dumps(pdoc)
-#print(type(pdoc_string))
-encryptjson(pdoc)
+# with open('/home/nontawat/SecMED/Patients/p0000_Intira Preecha.json','r') as file:
+#         pdoc = file.read()
+# #pdoc_string = json.dumps(pdoc)
+# #print(type(pdoc_string))
+# encryptjson(pdoc)

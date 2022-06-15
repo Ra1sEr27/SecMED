@@ -10,7 +10,7 @@ def insertpatient():
     client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
     mydb = client['EncryptedMTR']
     mycol = mydb['patient']
-    
+    """
     doc_count = mycol.count_documents({})
     patient_id_num = str(doc_count)
     while len(patient_id_num) < 4:
@@ -43,29 +43,33 @@ def insertpatient():
         "Vaccination":"{}".format(vaccinelistJson),
         "Room":"{}".format(room)
         }
-    
+    """
+    with open('./Patients/p0004_Tyler Latham.json','r') as file:
+        doc = file.read()
+    doc = json.loads(doc)
+    print(type(doc))
     #covert JSON to string
     doc_string = json.dumps(doc)
     doc_sorted = json.dumps(doc, indent = 3)
     print("Document: \n", doc_sorted)
     #generate Symkey
-    symkey = keygenerator.symkeygenerator(patient_id)
+    
     #encrypt the document
-    doc_encrypted = symcryptjson.encryptjson(symkey,doc_string) 
+    doc_encrypted = symcryptjson.encryptjson(doc_string) 
     doc_encrypted_sorted = json.dumps(doc_encrypted, indent = 3)
     
     print("Encrypted document: \n", doc_encrypted_sorted)
     
     while(True):
-        confirm = input("Do you want to insert the above encrypted document? (y/n/exit): ")
+        confirm = input("Do you want to insert the above encrypted document? (y/n): ")
         if confirm == "y":
             # main database
             id = mycol.insert_one(doc_encrypted)
             print("The document has been saved (id: {}).".format(id.inserted_id))
-            insertpatient() #go back to the top
+            #insertpatient() #go back to the top
+        #elif confirm == "n":
+        #    insertpatient() #go back to the top
         elif confirm == "n":
-            insertpatient() #go back to the top
-        elif confirm == "exit":
             exit()
         else:
             print("Invalid command, please try again")

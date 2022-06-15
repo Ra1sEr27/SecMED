@@ -7,4 +7,4 @@ def encrypt(id):
 def decrypt(id):
     p = subprocess.call(["cpabe-dec", "pub_key", "dataowner_priv_key", "{}_key.txt.cpabe".format(id)])
 #p = subprocess.call(["mv", "{}_key.txt.cpabe".format(id), "{}_key.txt".format(id)])
-decrypt("p0000")
+#decrypt("p0000")
