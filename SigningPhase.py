@@ -37,6 +37,19 @@ def Sign(CT_byte):
         temp1 = XOR(DS_Binary[i],R[i])
         DS_XOR_R += str(temp1)
     print("DS XORed R: ", DS_XOR_R)
+    binary_int = int(DS_XOR_R, 2)
+    # Getting the byte number
+    byte_number = binary_int.bit_length() + 7 // 8
+    
+    # Getting an array of bytes
+    binary_array = binary_int.to_bytes(byte_number, "big")
+    print(binary_array)
+    # Converting the array into ASCII text
+    ascii_text = binary_array.decode('ISO-8859-1')
+    #encoded_bytes = DS.encode(encoding='utf-8')
+    
+    # Getting the ASCII value
+    print(ascii_text)
     # return DS
 
 def RSADecryption(data):
