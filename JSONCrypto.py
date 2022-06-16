@@ -39,6 +39,8 @@ def encryptjson(data_string):
     #read the encrypted SymKey
     with open('{}_key.txt'.format(id),'rb') as file:
         enc_Symkey = file.read()
+    enc_Symkey = enc_Symkey.decode("ISO-8859-1")
+    # print(enc_Symkey)
     #rename the symkey file
     p = subprocess.call(["mv", "{}_key.txt".format(id), "{}_key.txt.cpabe".format(id)])
     #Decrypt the local Symkey

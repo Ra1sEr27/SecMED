@@ -20,4 +20,4 @@ def symkeygenerator(pid): #For regenerating the existed section key
 #     key = Fernet.generate_key()
 #     with open('admin.key','wb') as file:
 #         file.write(key)
-rsakeygenerator()
+symkeygenerator("test")

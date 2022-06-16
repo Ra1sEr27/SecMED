@@ -5,7 +5,7 @@ import pymongo
 import json
 import os
 import findDoc
-import symcryptjson
+import JSONCrypto
 from pymongo import MongoClient
 import pymongo
 
@@ -31,7 +31,7 @@ def updatePatient(key,patientdb):
                 print("The wanted document is not found, please try again")
         if pid == "back":
             break
-        decdoc = symcryptjson.decryptjson(key,wanteddoc)
+        decdoc = JSONCrypto.decryptjson(key,wanteddoc)
         decdoc_sorted = json.dumps(decdoc, indent = 6)
         print("{}'s document: \n{}".format(pid,decdoc_sorted))
 
@@ -54,7 +54,7 @@ def updatePatient(key,patientdb):
                         edited_decdoc_string = json.dumps(decdoc)
                         edited_decdoc_string_sorted = json.dumps(decdoc, indent = 6)
                         #encrypt the edited document
-                        encrypted_edited_decdoc = symcryptjson.encryptjson(key,edited_decdoc_string,"")
+                        encrypted_edited_decdoc = JSONCrypto.encryptjson(key,edited_decdoc_string,"")
 
                         #reindent the edited document
                         edited_decdoc_sorted = json.dumps(decdoc, indent = 6)

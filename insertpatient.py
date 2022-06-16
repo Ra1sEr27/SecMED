@@ -2,7 +2,7 @@
 from multiprocessing.sharedctypes import Value
 from cryptography.fernet import Fernet
 import json
-import symcryptjson
+import JSONCrypto
 import pymongo
 import keygenerator
 def insertpatient():
@@ -44,7 +44,7 @@ def insertpatient():
         "Room":"{}".format(room)
         }
     """
-    with open('./Patients/p0004_Tyler Latham.json','r') as file:
+    with open('./Patients/p0001_Siriporn Malai.json','r') as file:
         doc = file.read()
     doc = json.loads(doc)
     print(type(doc))
@@ -55,24 +55,23 @@ def insertpatient():
     #generate Symkey
     
     #encrypt the document
-    doc_encrypted = symcryptjson.encryptjson(doc_string) 
+    doc_encrypted = JSONCrypto.encryptjson(doc_string) 
     doc_encrypted_sorted = json.dumps(doc_encrypted, indent = 3)
     
     print("Encrypted document: \n", doc_encrypted_sorted)
-    
-    while(True):
-        confirm = input("Do you want to insert the above encrypted document? (y/n): ")
-        if confirm == "y":
-            # main database
-            id = mycol.insert_one(doc_encrypted)
-            print("The document has been saved (id: {}).".format(id.inserted_id))
-            #insertpatient() #go back to the top
-        #elif confirm == "n":
-        #    insertpatient() #go back to the top
-        elif confirm == "n":
-            exit()
-        else:
-            print("Invalid command, please try again")
+
+    confirm = input("Do you want to insert the above encrypted document? (y/n): ")
+    if confirm == "y":
+        # main database
+        id = mycol.insert_one(doc_encrypted)
+        print("The document has been saved (id: {}).".format(id.inserted_id))
+        #insertpatient() #go back to the top
+    #elif confirm == "n":
+    #    insertpatient() #go back to the top
+    elif confirm == "n":
+        exit()
+    else:
+        print("Invalid command, please try again")
 
 def entername():
     global name

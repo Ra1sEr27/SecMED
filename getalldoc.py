@@ -4,7 +4,7 @@ import json
 import hashlib
 from pymongo import MongoClient
 import pymongo
-import symcryptjson
+import JSONCrypto
 
 def getalldoc(key,db):
 
@@ -14,7 +14,7 @@ def getalldoc(key,db):
     #Get id from database
     for doc in mycol.find(): #find the wanted document by comparing MD
         
-        decdoc = symcryptjson.decryptjson(key,doc)
+        decdoc = JSONCrypto.decryptjson(key,doc)
         if not decdoc:  #if decryptjson returned False then terminate this function
             return False
         id_byte = str.encode(decdoc["id"])

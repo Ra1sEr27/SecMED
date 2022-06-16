@@ -4,7 +4,7 @@ import json
 from pymongo import MongoClient
 import pymongo
 import findDoc
-import symcryptjson
+import JSONCrypto
 import os
 NoneType = type(None)
 def deletePatient(key,patientdb):
@@ -21,7 +21,7 @@ def deletePatient(key,patientdb):
             wanteddoc = findDoc.findDoc(key,pid,patientdb)
             if type(wanteddoc) != NoneType:
                 #decrypt the document
-                decdoc = symcryptjson.decryptjson(key,wanteddoc)
+                decdoc = JSONCrypto.decryptjson(key,wanteddoc)
                 
                 decdoc_sorted = json.dumps(decdoc, indent = 6)
                 print(decdoc_sorted)

@@ -6,12 +6,12 @@ import json
 import hashlib
 import hmac
 import os
-import symcryptjson
+import JSONCrypto
 
 NoneType = type(None)
 def updateDataOwner(key,wanteddoc):
     if type(wanteddoc) != NoneType: #Found the wanted document
-        decdoc = symcryptjson.decryptjson(key,wanteddoc)
+        decdoc = JSONCrypto.decryptjson(key,wanteddoc)
         
         decdoc_sorted = json.dumps(decdoc,indent = 6)
         print("{}'s document : \n{}".format(decdoc["id"],decdoc_sorted))
@@ -68,7 +68,7 @@ def updateDataOwner(key,wanteddoc):
                     edited_decdoc_string = json.dumps(decdoc)
                     edited_decdoc_string_sorted = json.dumps(decdoc, indent = 3)
                     #encrypt the edited document
-                    encrypted_edited_decdoc = symcryptjson.encryptjson(key,edited_decdoc_string,"")
+                    encrypted_edited_decdoc = JSONCrypto.encryptjson(key,edited_decdoc_string,"")
 
                     #reindent the edited document
                     edited_decdoc_sorted = json.dumps(decdoc, indent = 3)
