@@ -1,7 +1,7 @@
 from cryptography.fernet import Fernet
 from pymongo import MongoClient
 import pymongo
-import hashlib, cpabe
+import hashlib, cpabe, json
 def findDoc(id):
     client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
     mydb = client['EncryptedMTR']
@@ -18,19 +18,26 @@ def findDoc(id):
         exit()
     #print(document)
     enc_SK = document["enc_SK"]
+    CT_byte = str.encode(document["CT"])
     #print(type(enc_SK))
-    print(enc_SK)
+    #print(enc_SK)
     #store the enc_Symkey to local storage
-    #enc_SK = str.encode(enc_SK)
+    enc_SK = str.encode(enc_SK, encoding="ISO-8859-1")
     #print("Byte SK: ",enc_SK)
     # enc_SK.decode("ISO-8859-1")
     # print(enc_SK)
-    with open('{}1_key.txt.cpabe'.format(id),'w') as file:
+    with open('{}1_key.txt.cpabe'.format(id),'wb') as file:
          file.write(enc_SK)
     #Decrypt the enc_Symkey
     cpabe.decrypt("p00011")
-    # with open('{}1_key.txt'.format(id),'r') as file:
-    #     Symkey = file.read()
+    with open('{}1_key.txt'.format(id),'r') as file:
+        Symkey = file.read()
+    fernet = Fernet(Symkey)
+    PT_byte= fernet.decrypt(CT_byte)
+    PT = PT_byte.decode("ISO-8859-1")
+    PT_json = json.loads(PT)
+    PT_sorted = json.dumps(PT_json, indent = 3)
+    print(PT_sorted)
     # print(Symkey)
     # return document
 findDoc("p0001")

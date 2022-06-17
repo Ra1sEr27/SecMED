@@ -39,6 +39,7 @@ def encryptjson(data_string):
     #read the encrypted SymKey
     with open('{}_key.txt'.format(id),'rb') as file:
         enc_Symkey = file.read()
+    #convert byte to string for storing in the DB
     enc_Symkey = enc_Symkey.decode("ISO-8859-1")
     # print(enc_Symkey)
     #rename the symkey file
