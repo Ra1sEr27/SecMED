@@ -1,7 +1,7 @@
 from cryptography.fernet import Fernet
 from pymongo import MongoClient
 import pymongo
-import hashlib, cpabe, json
+import hashlib, cpabe, json, timeit
 def findDoc(id):
     client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
     mydb = client['EncryptedMTR']
@@ -17,6 +17,7 @@ def findDoc(id):
         print("Connection timeout")
         exit()
     #print(document)
+    start = timeit.default_timer()
     enc_SK = document["enc_SK"]
     CT_byte = str.encode(document["CT"])
     #print(type(enc_SK))
@@ -29,7 +30,7 @@ def findDoc(id):
     with open('{}1_key.txt.cpabe'.format(id),'wb') as file:
          file.write(enc_SK)
     #Decrypt the enc_Symkey
-    cpabe.decrypt("p00011")
+    cpabe.decrypt("{}1".format(id))
     with open('{}1_key.txt'.format(id),'r') as file:
         Symkey = file.read()
     fernet = Fernet(Symkey)
@@ -37,7 +38,9 @@ def findDoc(id):
     PT = PT_byte.decode("ISO-8859-1")
     PT_json = json.loads(PT)
     PT_sorted = json.dumps(PT_json, indent = 3)
+    stop = timeit.default_timer()
+    print('Dec Time: ', stop - start)
     print(PT_sorted)
     # print(Symkey)
     # return document
-findDoc("p0001")
+findDoc("p0000")

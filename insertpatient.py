@@ -44,10 +44,10 @@ def insertpatient():
         "Room":"{}".format(room)
         }
     """
-    with open('./Patients/p0001_Siriporn Malai.json','r') as file:
+    with open('./Patients/p0000_Intira Preecha.json','r') as file:
         doc = file.read()
     doc = json.loads(doc)
-    print(type(doc))
+    #print(type(doc))
     #covert JSON to string
     doc_string = json.dumps(doc)
     doc_sorted = json.dumps(doc, indent = 3)
@@ -57,8 +57,7 @@ def insertpatient():
     #encrypt the document
     doc_encrypted = JSONCrypto.encryptjson(doc_string) 
     doc_encrypted_sorted = json.dumps(doc_encrypted, indent = 3)
-    
-    print("Encrypted document: \n", doc_encrypted_sorted)
+    #print("Encrypted document: \n", doc_encrypted_sorted)
 
     confirm = input("Do you want to insert the above encrypted document? (y/n): ")
     if confirm == "y":

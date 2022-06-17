@@ -3,9 +3,9 @@ from cryptography.fernet import Fernet
 import json
 import hashlib, rsa
 import SigningPhase
-import os, subprocess, cpabe, keygenerator
+import os, subprocess, cpabe, keygenerator, timeit
 def encryptjson(data_string):
-    #start = timeit.default_timer()
+    start = timeit.default_timer()
     #--------Begin Encryption Phase----------
     #convert string to JSON
     data_json = json.loads(data_string)
@@ -46,42 +46,42 @@ def encryptjson(data_string):
     p = subprocess.call(["mv", "{}_key.txt".format(id), "{}_key.txt.cpabe".format(id)])
     #Decrypt the local Symkey
     cpabe.decrypt(id)
-    # Upload ciphertext, MD and MAC to MongoDB
+    # Form a JSON document for storing on cloud
     doc = {'MD_id': '{}'.format(id_MD), 'CT': '{}'.format(CT), 'enc_SK': '{}'.format(enc_Symkey),
     'DS*R': '{}'.format(DS_XOR_R), 'R1': '{}'.format(R1)}
-    #stop = timeit.default_timer()
-    #print('Enc Time: ', stop - start)
+    stop = timeit.default_timer()
+    print('Enc Time: ', stop - start)
     #print(doc)
     return doc
 
-def decryptjson(key,doc):
-    #start = timeit.default_timer()
-    #store the stored ciphertext in CT
-    try:
-        CT = doc['CT']
-    except(TypeError):
-        print("Cannot find the document")
-        return False
-    #store the original MAC to origmac
+# def decryptjson(key,doc):
+#     #start = timeit.default_timer()
+#     #store the stored ciphertext in CT
+#     try:
+#         CT = doc['CT']
+#     except(TypeError):
+#         print("Cannot find the document")
+#         return False
+#     #store the original MAC to origmac
 
-    #convert string to byte
-    CTbytes = str.encode(CT)
-    #decrypt the ciphertext
+#     #convert string to byte
+#     CTbytes = str.encode(CT)
+#     #decrypt the ciphertext
     
-    with open('dataOwner.key','rb') as file:
-        check_key = file.read()
+#     with open('dataOwner.key','rb') as file:
+#         check_key = file.read()
 
-    fernet = Fernet(check_key)
-    decdoc = fernet.decrypt(CTbytes)
-    #convert the decrypted byte to string
-    decdoc = decdoc.decode("utf-8")
+#     fernet = Fernet(check_key)
+#     decdoc = fernet.decrypt(CTbytes)
+#     #convert the decrypted byte to string
+#     decdoc = decdoc.decode("utf-8")
     
-    #convert string to json format
-    decdoc = json.loads(decdoc)
+#     #convert string to json format
+#     decdoc = json.loads(decdoc)
     
-    #stop = timeit.default_timer()
-    #print('Dec Time: ', stop - start)
-    return decdoc
+#     #stop = timeit.default_timer()
+#     #print('Dec Time: ', stop - start)
+#     return decdoc
 #test code
 
 # with open('/home/nontawat/SecMED/Patients/p0000_Intira Preecha.json','r') as file:
