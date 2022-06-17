@@ -44,6 +44,7 @@ def insertpatient():
         "Room":"{}".format(room)
         }
     """
+    certid = "do0000"
     with open('./Patients/p0000_Intira Preecha.json','r') as file:
         doc = file.read()
     doc = json.loads(doc)
@@ -51,15 +52,15 @@ def insertpatient():
     #covert JSON to string
     doc_string = json.dumps(doc)
     doc_sorted = json.dumps(doc, indent = 3)
-    print("Document: \n", doc_sorted)
+    #print("Document: \n", doc_sorted)
     #generate Symkey
     
     #encrypt the document
-    doc_encrypted = JSONCrypto.encryptjson(doc_string) 
+    doc_encrypted = JSONCrypto.encryptjson(doc_string,certid) 
     doc_encrypted_sorted = json.dumps(doc_encrypted, indent = 3)
     #print("Encrypted document: \n", doc_encrypted_sorted)
 
-    confirm = input("Do you want to insert the above encrypted document? (y/n): ")
+    confirm = input("Do you want to insert the encrypted document? (y/n): ")
     if confirm == "y":
         # main database
         id = mycol.insert_one(doc_encrypted)

@@ -8,8 +8,6 @@ def rsakeygenerator(): #For generating the key for a new section
     f = open('RSA_pubkey.pem','wb')
     f.write(rsa_key.public_key().export_key('PEM'))
     f.close()
-    # f = open('mykey.pem','r')
-    # key = RSA.import_key(f.read())
     
 def symkeygenerator(pid): #For regenerating the existed section key
     key = Fernet.generate_key()
