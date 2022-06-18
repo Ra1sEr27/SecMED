@@ -2,8 +2,8 @@ import base64
 
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-import base64, hashlib, random, timeit, pymongo, datetime, json
-
+import base64, hashlib, random, timeit, pymongo, datetime, json, math
+from random import choice
 def XOR (a, b):
     if a != b:
         return 1
@@ -23,6 +23,8 @@ def Sign(CT_byte,certid,id_MD):
     DS_byte = CT_RSA_Pubkey.encrypt(CT_MD_byte)
     #print("DSByte: ", DS_byte)
     DS = DS_byte.decode('ISO-8859-1')
+    #print("len DS: ", len(DS))
+    #DS = DS[:]
     encoded_bytes = DS.encode(encoding='utf-8')
     #Convert DS to binary string
     DS_Binary = ''.join([bin(b)[2:] for b in encoded_bytes])
@@ -30,10 +32,20 @@ def Sign(CT_byte,certid,id_MD):
     #print("Binary: ",DS_Binary)
     #generate R value
     start = timeit.default_timer()
-    R = ""
-    for i in range(len(DS_Binary)):
-        temp = str(random.randint(0,1))
-        R += temp
+    # R = ""
+    lenDSBinary = len(DS_Binary)
+    # for i in range(lenDSBinary):
+    #     temp = str(random.randint(0,1))
+    #     R += temp
+    
+    # R = ''.join(choice('01') for _ in range(math.ceil(lenDSBinary/2)))
+    # R+=R
+    R = ''.join(choice('01') for _ in range(math.ceil(lenDSBinary/4)))
+    R+=R
+    R+=R
+    # lengthRDiv2 = math.ceil(len(R) / 2)
+    # R = R[:lengthRDiv2]
+    
     #print("len R: ", len(R))
     #print("R: ",R)
     # XOR DS_Binary with R value
@@ -74,21 +86,21 @@ def Sign(CT_byte,certid,id_MD):
     print('DSXORR & R1 Time: ', stop - start)
 
     #-------Audit Log part---------
-    client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
-    mydb = client['EncryptedMTR']
-    mycol = mydb['AuditLog']
+    # client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
+    # mydb = client['EncryptedMTR']
+    # mycol = mydb['AuditLog']
     
-    curtimedate = str(datetime.datetime.now())
-    update = {'certid': '{}'.format(certid), 'PubKey': '{}'.format(pubkey), 'DS*R': '{}'.format(DS_XOR_R_text), 'R1': '{}'.format(R1_text)}
-    existedLog = mycol.find_one({'MD_id': id_MD})
-    if  type(existedLog) != type(None):  #If the audit log of file is existed then update the log
-        existedLog[curtimedate] = update
-        mycol.delete_one({'MD_id': id_MD})
-        mycol.insert_one(existedLog)
-        #existedLog[curtimedate] = update
-    else: #There is no audit log for this document
-        log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
-        mycol.insert_one(log)
+    # curtimedate = str(datetime.datetime.now())
+    # update = {'certid': '{}'.format(certid), 'PubKey': '{}'.format(pubkey), 'DS*R': '{}'.format(DS_XOR_R_text), 'R1': '{}'.format(R1_text)}
+    # existedLog = mycol.find_one({'MD_id': id_MD})
+    # if  type(existedLog) != type(None):  #If the audit log of file is existed then update the log
+    #     existedLog[curtimedate] = update
+    #     mycol.delete_one({'MD_id': id_MD})
+    #     mycol.insert_one(existedLog)
+    #     #existedLog[curtimedate] = update
+    # else: #There is no audit log for this document
+    #     log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
+    #     mycol.insert_one(log)
     return DS_XOR_R_text, R1_text
 
 def RSADecryption(data):
