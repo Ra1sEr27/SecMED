@@ -28,29 +28,29 @@ def Sign(CT_byte,certid,id_MD):
     encoded_bytes = DS.encode(encoding='utf-8')
     #Convert DS to binary string
     DS_Binary = ''.join([bin(b)[2:] for b in encoded_bytes])
-    #print("len DS_binary: ", len(DS_Binary))
+    DS_Binary_1000 = DS_Binary[:1000]
+    #print("len DS_binary: ", len(DS_Binary_1000))
     #print("Binary: ",DS_Binary)
-    #generate R value
-    start = timeit.default_timer()
     # R = ""
-    lenDSBinary = len(DS_Binary)
+    lenDSBinary = len(DS_Binary_1000)
     # for i in range(lenDSBinary):
     #     temp = str(random.randint(0,1))
     #     R += temp
-    
-    # R = ''.join(choice('01') for _ in range(math.ceil(lenDSBinary/2)))
+    start = timeit.default_timer()
+    #generate R value
+    R = ''.join(choice('01') for _ in range(lenDSBinary))
+
+    # R = ''.join(choice('01') for _ in range(math.ceil(lenDSBinary/4)))
     # R+=R
-    R = ''.join(choice('01') for _ in range(math.ceil(lenDSBinary/4)))
-    R+=R
-    R+=R
+    # R+=R
     # lengthRDiv2 = math.ceil(len(R) / 2)
-    # R = R[:lengthRDiv2]
     
     #print("len R: ", len(R))
     #print("R: ",R)
     # XOR DS_Binary with R value
+    
     DS_XOR_R_Binary = ""
-    for i in range(len(DS_Binary)):
+    for i in range(1000):
         temp1 = XOR(DS_Binary[i],R[i])
         DS_XOR_R_Binary += str(temp1)
     #print("DS XORed R: ", DS_XOR_R)
@@ -70,10 +70,12 @@ def Sign(CT_byte,certid,id_MD):
     constR += constR
     #print("len const R: ",len(constR))
     #Get R1
+    
     R1_Binary = ""
     for i in range(len(R)):
         temp1 = XOR(R[i],constR[i])
         R1_Binary += str(temp1)
+    
     #Transform binary to text
     binary_int = int(R1_Binary, 2)
     # Getting the byte number
@@ -103,13 +105,13 @@ def Sign(CT_byte,certid,id_MD):
     #     mycol.insert_one(log)
     return DS_XOR_R_text, R1_text
 
-def RSADecryption(data):
-    f = open('RSA_privkey.pem','r')
-    privkey = RSA.import_key(f.read())
-    CT_RSA_Privkey = PKCS1_OAEP.new(privkey)
-    MD = CT_RSA_Privkey.decrypt(data)
-    print("MD: ",MD)
-    return MD
+# def RSADecryption(data):
+#     f = open('RSA_privkey.pem','r')
+#     privkey = RSA.import_key(f.read())
+#     CT_RSA_Privkey = PKCS1_OAEP.new(privkey)
+#     MD = CT_RSA_Privkey.decrypt(data)
+#     print("MD: ",MD)
+#     return MD
 
 # input = str.encode("test")
 # Sign(input)
