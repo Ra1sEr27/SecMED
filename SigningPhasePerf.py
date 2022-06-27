@@ -11,7 +11,7 @@ def XOR (a, b):
         return 0
 
 def Sign(CT_byte,certid,id_MD):
-    #start = timeit.default_timer()
+    start = timeit.default_timer()
     #hash the CT
     CT_MD = hashlib.sha256(CT_byte).hexdigest()
     CT_MD_byte = str.encode(CT_MD)
@@ -66,31 +66,31 @@ def Sign(CT_byte,certid,id_MD):
     binary_array = binary_int.to_bytes(byte_number, "big")
     R1_text = binary_array.decode('ISO-8859-1')
     #print("R1: ",R1_text)
-    #stop = timeit.default_timer()
-    #print('DSXORR & R1 Time: ', stop - start)
+    stop = timeit.default_timer()
+    runtime = stop - start
 
     #-------Audit Log part---------
-    client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
-    mydb = client['EncryptedMTR']
-    mycol = mydb['AuditLog']
+    # client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
+    # mydb = client['EncryptedMTR']
+    # mycol = mydb['AuditLog']
     
-    #get private key from local, convert to string for storing on database
-    f = open('{}_RSA_privkey.pem'.format(certid),'r')
-    privkey = RSA.import_key(f.read())
-    privkey_byte = privkey.exportKey("PEM")
-    privkey_string = privkey_byte.decode('ISO-8859-1')
+    # #get private key from local, convert to string for storing on database
+    # f = open('{}_RSA_privkey.pem'.format(certid),'r')
+    # privkey = RSA.import_key(f.read())
+    # privkey_byte = privkey.exportKey("PEM")
+    # privkey_string = privkey_byte.decode('ISO-8859-1')
     
-    curtimedate = str(datetime.datetime.now())
-    update = {'certid': '{}'.format(certid), 'PrivKey': '{}'.format(privkey_string), 'DS*R': '{}'.format(DS_XOR_R_text), 'R1': '{}'.format(R1_text)}
-    existedLog = mycol.find_one({'MD_id': id_MD})
-    #stop = timeit.default_timer()
-    #print('Signing Time: ', stop - start)
-    if  type(existedLog) != type(None):  #If the audit log of file is existed then update the log
-        existedLog[curtimedate] = update
-        mycol.delete_one({'MD_id': id_MD})
-        mycol.insert_one(existedLog)
-        #existedLog[curtimedate] = update
-    else: #There is no audit log for this document
-        log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
-        mycol.insert_one(log)
-    return DS_XOR_R_text, R1_text
+    # curtimedate = str(datetime.datetime.now())
+    # update = {'certid': '{}'.format(certid), 'PrivKey': '{}'.format(privkey_string), 'DS*R': '{}'.format(DS_XOR_R_text), 'R1': '{}'.format(R1_text)}
+    # existedLog = mycol.find_one({'MD_id': id_MD})
+    # #stop = timeit.default_timer()
+    # #print('Signing Time: ', stop - start)
+    # if  type(existedLog) != type(None):  #If the audit log of file is existed then update the log
+    #     existedLog[curtimedate] = update
+    #     mycol.delete_one({'MD_id': id_MD})
+    #     mycol.insert_one(existedLog)
+    #     #existedLog[curtimedate] = update
+    # else: #There is no audit log for this document
+    #     log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
+    #     mycol.insert_one(log)
+    return DS_XOR_R_text, R1_text, runtime

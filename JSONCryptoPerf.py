@@ -2,10 +2,10 @@
 from cryptography.fernet import Fernet
 import json
 import hashlib, rsa
-import SigningPhase
+import SigningPhasePerf
 import os, subprocess, cpabe, keygenerator, timeit
 def encryptjson(data_string,certid):
-    start = timeit.default_timer()
+    #start = timeit.default_timer()
     #--------Begin Encryption Phase----------
     #convert string to JSON
     
@@ -37,7 +37,7 @@ def encryptjson(data_string,certid):
     p = subprocess.call(["mv", "{}_key.txt.cpabe".format(id), "{}_key.txt".format(id)])
     
     #-----Begin Signing Phase------
-    DS_XOR_R, R1 = SigningPhase.Sign(CT_byte,certid, id_MD)
+    DS_XOR_R, R1, runtime = SigningPhasePerf.Sign(CT_byte,certid, id_MD)
 
     #read the encrypted SymKey
     with open('{}_key.txt'.format(id),'rb') as file:
@@ -52,10 +52,10 @@ def encryptjson(data_string,certid):
     # Form a JSON document for storing on cloud
     doc = {'MD_id': '{}'.format(id_MD), 'CT': '{}'.format(CT), 'enc_SK': '{}'.format(enc_Symkey),
     'DS*R': '{}'.format(DS_XOR_R), 'R1': '{}'.format(R1)}
-    stop = timeit.default_timer()
-    print('Enc Time: ', stop - start)
+    #stop = timeit.default_timer()
+    #runtime = stop - start
     #print(doc)
-    return doc
+    return doc, runtime
 
 # def decryptjson(key,doc):
 #     #start = timeit.default_timer()
