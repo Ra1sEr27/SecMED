@@ -55,7 +55,7 @@ def findDocTime():
     mydb = client['EncryptedMTR']
     mycol = mydb['patient']
     prevLeastRuntime = 0
-    for i in range(1,101):
+    for i in range(1000,10001,1000):
         j = str(i)
         while(len(j) < 5):
             j = "0"+ j
@@ -90,11 +90,11 @@ def findDocTime():
                 #print("Byte SK: ",enc_SK)
                 # enc_SK.decode("ISO-8859-1")
                 # print(enc_SK)
-                with open('{}1_key.txt.cpabe'.format(id),'wb') as file:
+                with open('./SymkeyCloud/{}_key.txt.cpabe'.format(id),'wb') as file:
                     file.write(enc_SK)
                 #Decrypt the enc_Symkey
-                cpabe.decrypt("{}_key.txt.cpabe".format(id))
-                with open('{}1_key.txt'.format(id),'r') as file:
+                cpabe.decrypt("./SymkeyCloud/{}_key.txt.cpabe".format(id))
+                with open('./SymkeyCloud/{}_key.txt'.format(id),'r') as file:
                     Symkey = file.read()
                 fernet = Fernet(Symkey)
                 PT_byte= fernet.decrypt(CT_byte)
@@ -110,6 +110,8 @@ def findDocTime():
                         print('DecTime({}): '.format(i), runtime_list[i1])
                         prevLeastRuntime = runtime_list[i1]
                         break
+            with open('./PTCloud/{}.txt'.format(id),'w') as file:
+                file.write(PT)
         # runtimexbar = runtimexbar / 5
         # print('DecTime({}): '.format(i), runtimexbar)
         #print(PT)

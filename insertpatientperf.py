@@ -1,4 +1,5 @@
 
+from curses import start_color
 from multiprocessing.sharedctypes import Value
 from cryptography.fernet import Fernet
 import json
@@ -45,56 +46,49 @@ def insertpatient():
         }
     """
     certid = "DO0000"
+    start = time.time()
     with open('./testpatient/p00000.json','r') as file:
         doc = file.read()
     doc = json.loads(doc)
     prevLeastRuntime = 0
-    for i in range(1,101):
-        
+    for i in range(1000,10001,1000):
+        #print(doc_string)
+        #runtime_xbar = 0
+        #leastruntime = 2
         j = str(i)
         while(len(j) < 5):
             j = "0"+ j
-        # while(len(certid) < 5):
-        #     certid = "0" + certid
-        # certid = "DO" + certid
-        # print(certid)
-        #print(j)
-        doc["id"] = "p{}".format(j)
-        #print(doc['id'])
-        if i > 1:
-            doc["id{}".format(i)] = "p00001"
-        #print(doc)
-        #doc_encrypted = JSONCrypto.encryptjson(doc_string,certid)
-        if i % 10 == 0:
-            #covert JSON to string
-            doc_string = json.dumps(doc)
-            #print(doc_string)
-            #runtime_xbar = 0
-            #leastruntime = 2
-            runtime_list = []
-            for k in range(10):
-                start = time.time()
-                #encrypt the document
-                doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(doc_string,certid)
-                stop = time.time()
-                runtime = stop - start
-                #print(doc)
-                runtime_list.append(runtime)
-                # if runtime < leastruntime:
-                #     leastruntime = runtime
-                #runtime_xbar += runtime
-            #runtime_xbar = runtime_xbar / 10
-            #print(runtime_list)
-            runtime_list.sort()
-            for i1 in range(len(runtime_list)):
-                if runtime_list[i1] > prevLeastRuntime:
-                    print('EncTime({}): '.format(i), runtime_list[i1])
-                    #print('DSRR1Time({}): '.format(i), runtime_list[i1])
-                    prevLeastRuntime = runtime_list[i1]
-                    break
+        id = "p"+j
+        doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid,start,i)
+        #runtime_list = []
+        # for k in range(10):
+        #     #start = time.time()
+        #     #encrypt the document
+        #     doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid)
+        #     #stop = time.time()
+        #     #runtime = stop - start
+        #     #print(doc)
+        #     #runtime_list.append(runtime)
+        #     runtime_list.append(DSRR1runtime)
+        #     # if runtime < leastruntime:
+        #     #     leastruntime = runtime
+        #     #runtime_xbar += runtime
+        #runtime_xbar = runtime_xbar / 10
+        #print(runtime_list)
+        # runtime_list.sort()
+        # for i1 in range(len(runtime_list)):
+        #     if runtime_list[i1] > prevLeastRuntime:
+        #         #print('EncTime({}): '.format(i), runtime_list[i1])
+        #         print('DSRR1Time({}): '.format(i), runtime_list[i1])
+        #         prevLeastRuntime = runtime_list[i1]
+        #         break
+
+        # doc_encrypted = json.dumps(doc_encrypted)
+        # with open('./testpatientCT/{}.txt'.format(id),'w') as file:
+        #     file.write(doc_encrypted)
             #print('EncTime({}): '.format(i), runtime_xbar)
-            #id = mycol.insert_one(doc_encrypted)
-            #print("The document has been saved (id: {}).".format(id.inserted_id))
+        #id = mycol.insert_one(doc_encrypted)
+        #print("The document has been saved (id: {}).".format(id.inserted_id))
 #     confirm = input("Do you want to insert the encrypted document? (y/n): ")
 #     if confirm == "y":
 #         id = mycol.insert_one(doc_encrypted)

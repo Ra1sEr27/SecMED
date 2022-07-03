@@ -68,7 +68,7 @@ def Sign(CT_byte,certid,id_MD):
     #print("R1: ",R1_text)
     stop = timeit.default_timer()
     runtime = stop - start
-
+    
     #-------Audit Log part---------
     # client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
     # mydb = client['EncryptedMTR']

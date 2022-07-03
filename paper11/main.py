@@ -8,10 +8,12 @@ from sre_compile import isstring
 import linecache
 from tate_bilinear_pairing import eta
 from tate_bilinear_pairing import ecc
-import bplib
 from bplib.bp import BpGroup
+from decimal import Decimal
+import timeit
 
-G = bplib.BpGroup()
+G = BpGroup()
+
 #print(G)
 
 def toBinary(a):
@@ -42,13 +44,14 @@ def KeyGen():
     Y = (Y[:16]) if len(Y) > 16 else Y
     #print(len(str(Y)))
     print("Verifier's private key ",y)
-    print("Verifier's public key ",Y)    
+    print("Verifier's public key ",Y)
     return g,u,x,X,y,Y
 
 
 def MainHere(fid):
+    start = timeit.default_timer()
     with open('test.txt') as f:
-        g,u,x,X,y,Y = KeyGen()
+        g,u,x,X,y,Y = KeyGen() #x = privkey of owner, X=pubkey of owner, y = privkey of med, Y = pubkey of med
         b = 1
         while True:
             c = f.read(1)
@@ -82,7 +85,7 @@ def MainHere(fid):
                 cc = (cc[:3]) if len(cc) > 3 else cc
                 cc = int(cc)
                 tag = hash(hoho*math.pow(u,cc))**x
-                #print(tag)
+                print("tag: ",tag)
                 txt = (f'[{tag}]<[{cc}]>')
                 with open('block_tag.txt', "a") as tagpair:
                     tagpair.write(txt+'\n')
@@ -90,6 +93,9 @@ def MainHere(fid):
                 print(txt)
                 print(txt.format(tagg = tag,block = cc))
     pack_key = [g,u,x,X,y,Y]
+    stop = timeit.default_timer()
+    runtime = stop -start
+    print('runtime gen: ', runtime)
     return pack_key
 
 
@@ -138,7 +144,8 @@ def ProofGen(T, c, k1, k2):
     return P
 
 def verify(y,X, g, u, fid, c, k1, k2, FAll, TAll):
-    enc_check = hash(math.pow(int(X),int(y)))    
+    start = timeit.default_timer()
+    enc_check = hash(math.pow(int(X),int(y)))  
     TAll = 1
     FAll = 1    
     hashcheck = 1
@@ -161,17 +168,47 @@ def verify(y,X, g, u, fid, c, k1, k2, FAll, TAll):
         i+=1
     
     b_right = hashcheck*math.pow(u,FAll)
-    b_leftside = G.pair(TAll, g) 
-    b_rightside = G.pair(b_right, X)
-    if(b_leftside == b_rightside):
-        return 1
+    g1, g2 = G.gen1(), G.gen2()
+    #b_leftside = G.pair(TAll, g) 
+    #b_rightside = G.pair(b_right, X)
+    #print(g1)
+    #print(g2)
+    gt = G.pair(g1, g2)
+    TAll = int((TAll)/100000000000000000000000000000000000000)
+    #TAll = int((TAll))
+    #print(TAll)
+    #print('g: ',g)
+    #gt6 = (gt**TAll)
+    #gt7 = (gt**1000)
+    b_right = int((b_right)/100**127)
+    #b_right = int((b_right))
+    #print('b_right ',b_right)
+    gt67 = G.pair(g1*TAll, g2*g) 
+    #print('X: ',X)
+    gt89 = G.pair(g1*b_right, g2*1)
+    #G.pair(gt67, gt6)
+    #b_right = int(b_right)
+    print(gt67, gt89)
+    if(gt67 != gt89):
+        print('true')
     else:
-        return 0
+        print('false')
+    stop = timeit.default_timer()
+    runtime = stop -start
+    print('runtime ver: ', runtime)
+    # if(G.pair(g1, 6*g2) == gt6):
+    #     print('true')
+    #b_leftside = G.pair("1", "1") 
+    # #b_rightside = G.pair("1", "1")
+    # if(b_leftside == b_rightside):
+    #     return 1
+    # else:
+    #     return 0
 
 # ==== test =====
 #print(c,k1,k2)
 g,u,x,X,y,Y = MainHere('1')
-c,k1,k2 = challenge(5)
+c,k1,k2 = challenge(2)
 FAll,TAll = ProofGen(1,c,2,3)
 verify(y,X,g,u,1,c, k1 ,k2, FAll, TAll)
 #print("FAll: ",FAll)
@@ -183,13 +220,7 @@ verify(y,X,g,u,1,c, k1 ,k2, FAll, TAll)
 #print(c,k1,k2)
 #ProofGen(T,c,k1,k2)
 
-def shit():    
-    with open('test.txt') as infp:
-        files = [open('%d.txt' % i, 'w') for i in range(1000)]
-        for i, line in enumerate(infp):
-            files[i % 1000].write(line)
-        for f in files:
-            f.close()
+
 
 f = open("test.txt", "r")
 f = str(f)

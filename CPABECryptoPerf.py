@@ -4,19 +4,16 @@ import json
 import hashlib, rsa
 import SigningPhasePerf
 import os, subprocess, cpabe, keygenerator, timeit
-def encryptjson(data_string,certid):
+def encryptjson(pid,certid):
     #start = timeit.default_timer()
     #--------Begin Encryption Phase----------
-    #convert string to JSON
-    data_json = json.loads(data_string)
-    #store name in name variable
-    id = data_json["id"]
 
-    id_byte = str.encode(id)
+    id_byte = str.encode(pid)
     #generate Symkey
     # this encrypts the data read from your json and stores it in 'encrypted'
     #start = timeit.default_timer()
-    cpabe.encrypt_text(id)
+    
+    cpabe.encrypt_text(pid)
     #p = subprocess.call(["dataowner", "or", "medicalstaff"])
     #hash patient id
     id_MD = hashlib.sha256(id_byte).hexdigest()
@@ -28,9 +25,9 @@ def encryptjson(data_string,certid):
     #cpabe.encrypt(id)
     
     #rename encrypted json file to be able to read the file
-    p = subprocess.call(["mv", "./testpatient/{}.txt.cpabe".format(id), "./testpatient/{}.txt".format(id)])
+    p = subprocess.call(["mv", "./patientCrypto/{}.txt.cpabe".format(pid), "./patientCrypto/{}.txt".format(pid)])
     #read the encrypted json file
-    with open('./testpatient/{}.txt'.format(id),'rb') as file:
+    with open('./patientCrypto/{}.txt'.format(pid),'rb') as file:
         CT_byte = file.read()
     #-----Begin Signing Phase------
     #CT_byte = str.encode(CT, encoding="ISO-8859-1")

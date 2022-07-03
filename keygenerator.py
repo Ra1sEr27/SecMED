@@ -11,7 +11,7 @@ def rsakeygenerator(): #For generating the key for a new section
     
 def symkeygenerator(pid): #For regenerating the existed section key
     key = Fernet.generate_key()
-    with open('{}_key.txt'.format(pid),'wb') as file:
+    with open('./Symkeys/{}_key.txt'.format(pid),'wb') as file:
         file.write(key)
     return key
 # def re_adminkeygenerator(): #For regenerating the admin section key

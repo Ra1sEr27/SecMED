@@ -2,7 +2,7 @@
 from multiprocessing.sharedctypes import Value
 from cryptography.fernet import Fernet
 import json
-import JSONCryptoPerf, CPABECryptoPerf
+import JSONCryptoPerf, CPABECryptoPerf,cpabe
 import pymongo, time
 import keygenerator
 def insertpatient():
@@ -45,61 +45,40 @@ def insertpatient():
         }
     """
     certid = "DO0000"
-    with open('./testpatient/p00000.json','r') as file:
-        doc = file.read()
-    doc = json.loads(doc)
+    #print("test")
     prevLeastRuntime = 0
-    for i in range(1,101):
-        
+    for i in range(1000,10001,1000):
         j = str(i)
         while(len(j) < 5):
             j = "0"+ j
-        # while(len(certid) < 5):
-        #     certid = "0" + certid
-        # certid = "DO" + certid
-        # print(certid)
-        #print(j)
-        doc["id"] = "p{}".format(j)
-        #print(doc['id'])
-        if i > 1:
-            doc["id{}".format(i)] = "p00001"
-        #print(doc)
-        #doc_encrypted = JSONCrypto.encryptjson(doc_string,certid)
-        if i % 10 == 0:
-            doc_string = json.dumps(doc)
-            doc_byte = str.encode(doc_string)
-            with open('./testpatient/{}.txt'.format(doc["id"]),'wb') as file:
-                file.write(doc_byte)
-            #covert JSON to string
-            #print(doc_string)
-            #runtime_xbar = 0
-            #leastruntime = 2
-            runtime_list = []
-            for k in range(10):
-                start = time.time()
-                #encrypt the document
-                doc_encrypted, DSRR1runtime = CPABECryptoPerf.encryptjson(doc_string,certid)
-                stop = time.time()
-                runtime = stop - start
-                #print(doc_encrypted)
-                #runtime_list.append(DSRR1runtime)
-                runtime_list.append(runtime)
-                # if runtime < leastruntime:
-                #     leastruntime = runtime
-                #runtime_xbar += runtime
-            #runtime_xbar = runtime_xbar / 10
-            #print(runtime_list)
-            #print(doc_encrypted['CT'])
-            runtime_list.sort()
-            for i1 in range(len(runtime_list)):
-                if runtime_list[i1] > prevLeastRuntime:
-                    print('EncTime({}): '.format(i), runtime_list[i1])
-                    #print('DSRR1Time({}): '.format(i), runtime_list[i1])
-                    prevLeastRuntime = runtime_list[i1]
-                    break
+        pid = "p"+ j
+        runtime_list = []
+        for k in range(10):
+            start = time.time()
+            #encrypt the document
+            #doc_encrypted, DSRR1runtime = CPABECryptoPerf.encryptjson(doc_string,certid)
+            cpabe.encrypt_text(pid)
+            stop = time.time()
+            runtime = stop - start
+            #print(doc_encrypted)
+            #runtime_list.append(DSRR1runtime)
+            runtime_list.append(runtime)
+            # if runtime < leastruntime:
+            #     leastruntime = runtime
+            #runtime_xbar += runtime
+        #runtime_xbar = runtime_xbar / 10
+        #print(runtime_list)
+        #print(doc_encrypted['CT'])
+        runtime_list.sort()
+        for i1 in range(len(runtime_list)):
+            if runtime_list[i1] > prevLeastRuntime:
+                print('EncTime({}): '.format(i), runtime_list[i1])
+                #print('DSRR1Time({}): '.format(i), runtime_list[i1])
+                prevLeastRuntime = runtime_list[i1]
+                break
             #print('EncTime({}): '.format(i), runtime_xbar)
-            id = mycol.insert_one(doc_encrypted)
-            print("The document has been saved (id: {}).".format(id.inserted_id))
+            #id = mycol.insert_one(doc_encrypted)
+            #print("The document has been saved (id: {}).".format(id.inserted_id))
 #     confirm = input("Do you want to insert the encrypted document? (y/n): ")
 #     if confirm == "y":
 #         id = mycol.insert_one(doc_encrypted)
