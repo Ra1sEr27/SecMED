@@ -141,6 +141,7 @@ def ProofGen(T, c, k1, k2):
         FAll += ai*int(mvi)
         i+=1
         P = [FAll, TAll]
+    #print("P: ",P)
     return P
 
 def verify(y,X, g, u, fid, c, k1, k2, FAll, TAll):

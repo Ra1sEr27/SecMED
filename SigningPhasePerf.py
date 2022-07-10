@@ -11,7 +11,7 @@ def XOR (a, b):
         return 0
 
 def Sign(CT_byte,certid,id_MD):
-    start = timeit.default_timer()
+    
     #hash the CT
     CT_MD = hashlib.sha256(CT_byte).hexdigest()
     CT_MD_byte = str.encode(CT_MD)
@@ -36,9 +36,13 @@ def Sign(CT_byte,certid,id_MD):
     # XOR DS_Binary with R value
     
     DS_XOR_R_Binary = ""
+    start = timeit.default_timer()
     for i in range(1000):
         temp1 = XOR(DS_Binary[i],R[i])
         DS_XOR_R_Binary += str(temp1)
+    stop = timeit.default_timer()
+    runtime1 = stop-start
+    #print(runtime1)
     binary_int = int(DS_XOR_R_Binary, 2)
     # Getting the byte number
     byte_number = binary_int.bit_length() + 7 // 8
@@ -54,10 +58,13 @@ def Sign(CT_byte,certid,id_MD):
     #Get R1
     
     R1_Binary = ""
+    start = timeit.default_timer()
     for i in range(len(R)):
         temp1 = XOR(R[i],constR[i])
         R1_Binary += str(temp1)
-    
+    stop = timeit.default_timer()
+    runtime2 = stop-start
+    #print(runtime2)
     #Transform binary to text
     binary_int = int(R1_Binary, 2)
     # Getting the byte number
@@ -66,8 +73,8 @@ def Sign(CT_byte,certid,id_MD):
     binary_array = binary_int.to_bytes(byte_number, "big")
     R1_text = binary_array.decode('ISO-8859-1')
     #print("R1: ",R1_text)
-    stop = timeit.default_timer()
-    runtime = stop - start
+    # stop = timeit.default_timer()
+    # runtime = stop - start
     
     #-------Audit Log part---------
     # client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
@@ -93,4 +100,5 @@ def Sign(CT_byte,certid,id_MD):
     # else: #There is no audit log for this document
     #     log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
     #     mycol.insert_one(log)
-    return DS_XOR_R_text, R1_text, runtime
+    runtimexor = runtime1+runtime2
+    return DS_XOR_R_text, R1_text, runtimexor

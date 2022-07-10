@@ -36,9 +36,9 @@ def encryptjson(pid,certid,start,i):
     p = subprocess.call(["mv", "./Symkeys/{}_key.txt.cpabe".format(pid), "./Symkeys/{}_key.txt".format(pid)])
     
     #-----Begin Signing Phase------
-    DS_XOR_R, R1, runtime = SigningPhasePerf.Sign(CT_byte,certid, id_MD)
-    stop = time.time()
-    print("Time({}): ".format(i),stop-start)
+    DS_XOR_R, R1, runtimexor = SigningPhasePerf.Sign(CT_byte,certid, id_MD)
+    #stop = time.time()
+    #print("Time({}): ".format(i),stop-start)
     #read the encrypted SymKey
     with open('./Symkeys/{}_key.txt'.format(pid),'rb') as file:
         enc_Symkey = file.read()
@@ -54,7 +54,7 @@ def encryptjson(pid,certid,start,i):
     #stop = timeit.default_timer()
     #runtime = stop - start
     #print(doc)
-    return doc, runtime
+    return doc, runtimexor
 
 # def decryptjson(key,doc):
 #     #start = timeit.default_timer()
