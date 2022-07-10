@@ -103,7 +103,7 @@ for i1 in range(1000,10001,1000):
         start = timeit.default_timer()
         numblock = i1*10 # 1000 Attributes -> 1000*10 = 10000
         stop = timeit.default_timer()
-        runtime1 = stop-start
+        runtimemul1 = stop-start
         array_blocks = []
 
         #convert doc to byte
@@ -137,7 +137,7 @@ for i1 in range(1000,10001,1000):
         #print("Si: ",len(si))
         s = int(si,2)
         #print("S: ",s)
-        #start = timeit.default_timer()
+        start = timeit.default_timer()
         P0 = int(array_blocks[si_index],2)**s
         #print("P0: ",P0)
         Di = hash(id**s)
@@ -145,8 +145,8 @@ for i1 in range(1000,10001,1000):
         g = random.randint(1,5)
         PKi = g**s
         wj,Tj = TagGen(filename, array_blocks,Di,mj,s)
-        #stop = timeit.default_timer()
-        runtime2 = stop-start
+        stop = timeit.default_timer()
+        runtimeexp1 = stop-start
         #--store Di and Tj in log file
         with open('Logfile.json','r') as file:
             doc = file.read()
@@ -160,9 +160,10 @@ for i1 in range(1000,10001,1000):
         chal = challenge(array_blocks,ZqStar)
         #print(chal)
         #--Begin ProofGen
-        #start = timeit.default_timer()
+        start = timeit.default_timer()
         P,ai,vi = ProofGen(chal)
-        
+        stop = timeit.default_timer()
+        runtimemul2 = stop-start
         #--Begin verification
         # with open('Logfile.json','r') as file:
         #     doc = file.read()
@@ -174,9 +175,9 @@ for i1 in range(1000,10001,1000):
         start = timeit.default_timer()
         output = verify(wj,PKi,id,mj,P0,ai,vi)
         stop = timeit.default_timer()
-        runtime3 = stop-start
-        #totalruntime = runtime1+runtime2+runtime3
-        runtimelist.append(runtime3)
+        runtimeexp2 = stop-start
+        totalruntime = 2*(runtimeexp1+runtimeexp2)+runtimemul1+runtimemul2
+        runtimelist.append(totalruntime)
     runtimelist.sort()
     for i2 in range(len(runtimelist)):
         if runtimelist[i2] > prevLeastRuntime:
