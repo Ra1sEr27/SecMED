@@ -23,7 +23,10 @@ def encryptjson(pid,certid,start,i):
     CT_byte= Fernet(symkey).encrypt(doc_byte)
     
     #hash patient id
+    #start = timeit.default_timer()
     id_MD = hashlib.sha256(id_byte).hexdigest()
+    #stop = timeit.default_timer()
+    #runtime1 = stop-start
     # convert bytes to string
     CT = CT_byte.decode("ISO-8859-1")
     #stop = timeit.default_timer()

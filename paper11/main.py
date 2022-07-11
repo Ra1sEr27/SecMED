@@ -1,103 +1,16 @@
-import math
+from array import array
+import json,math, timeit
 from operator import concat
 import random
-from itertools import chain, islice
-import json
-from sre_compile import isstring
-#import bplib 
-import linecache
-from tate_bilinear_pairing import eta
-from tate_bilinear_pairing import ecc
-from bplib.bp import BpGroup
 from decimal import Decimal
-import timeit
+from sympy import airyaiprime
+from sympy.ntheory.factor_ import totient
+import linecache
+import bplib
+from bplib.bp import BpGroup
 
 G = BpGroup()
-
-#print(G)
-
-def toBinary(a):
-  l,m=[],[]
-  for i in a:
-    l.append(ord(i))
-  for i in l:
-    m.append(int(bin(i)[2:]))
-  return m
-
-def KeyGen():
-    g = ('{0:05}'.format(random.randint(1, 1)))
-    u = ('{0:05}'.format(random.randint(1, 1)))
-    x = ('{0:05}'.format(random.randint(1, 1)))
-    g = int(g)
-    x = int(x)
-    X = g**x
-    X = str(X)
-    X = (X[:16]) if len(X) > 16 else X
-    print("Data owner's private key ",x)
-    print("Data owner's public key ",X)
-    #print(X)
-    #print(len(str(X)))
-    y = ('{0:05}'.format(random.randint(1, 1)))
-    y = int(y)
-    Y = g**y
-    Y = str(Y)
-    Y = (Y[:16]) if len(Y) > 16 else Y
-    #print(len(str(Y)))
-    print("Verifier's private key ",y)
-    print("Verifier's public key ",Y)
-    return g,u,x,X,y,Y
-
-
-def MainHere(fid):
-    start = timeit.default_timer()
-    with open('test.txt') as f:
-        g,u,x,X,y,Y = KeyGen() #x = privkey of owner, X=pubkey of owner, y = privkey of med, Y = pubkey of med
-        b = 1
-        while True:
-            c = f.read(1)
-            if not c:
-                print("End of file")
-                break
-            if c in set('ABCDEFGH"IJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789}{][,/.1234567890-=qwertyuiop[]asdfghjkl;!@#$%^&*()_+QWERTYUIOP}{ASDFGHJKL:"ZXCVBNM<>?'):
-                #print("Read a character: ",b, " -> ", c)
-                with open('file.txt', "a") as d:
-                    d.write(c)
-                    d.close()
-                b = int(b)
-                b+=1
-                Y = int(Y)
-                x = int(x)
-                enc_kp = hash(Y**x)
-                enc_kp = str(enc_kp)
-                b = str(b)
-                fid = str(fid)
-                hoho = str(enc_kp)+str(fid)+str(b)
-                hoho = int(hoho)
-                #print(hoho)
-                u = int(u)
-                #c = int(c)
-                c = toBinary(c)
-                #cc = (','.join(c))
-                cc = ( ", ".join( repr(e) for e in c ) )
-                print(cc)
-                #print(c)
-                #math.pi()*()
-                cc = (cc[:3]) if len(cc) > 3 else cc
-                cc = int(cc)
-                tag = hash(hoho*math.pow(u,cc))**x
-                print("tag: ",tag)
-                txt = (f'[{tag}]<[{cc}]>')
-                with open('block_tag.txt', "a") as tagpair:
-                    tagpair.write(txt+'\n')
-                    tagpair.close()
-                print(txt)
-                print(txt.format(tagg = tag,block = cc))
-    pack_key = [g,u,x,X,y,Y]
-    stop = timeit.default_timer()
-    runtime = stop -start
-    print('runtime gen: ', runtime)
-    return pack_key
-
+print(G)
 
 def gcd(a, b):
      
@@ -114,6 +27,7 @@ def phi(n):
             result+=1
     return result
 
+
 def challenge(c):
     k1 = ('{0:05}'.format(random.randint(1, 1)))
     k2 = ('{0:05}'.format(random.randint(1, 1)))
@@ -121,32 +35,42 @@ def challenge(c):
     print(chal)
     return tuple(chal)
 
-def ProofGen(T, c, k1, k2):
+
+def ProofGen(c,k1,k2):
+    #print(int(chal[0],2))
     TAll = 1
-    FAll = 1    
-    for i in range(c):
-        #print(xx)
-        print("========= loop", i ," =========")
+    FAll = 1
+    
+    print('c,k1,k2: ',c,k1,k2)
+    
+    #print(type(chal[1]))
+    #print(int(chal[0],2))
+    for i in range(1,2,1):
         vi = math.pi*int(concat(str(k1),str(i))) # choosing random index
-        print("vi ",math.floor(vi))
         ai = phi(int(concat(str(k2),str(i)))) # choose random params
-        print("ai ",math.floor(ai))
-        line = linecache.getline(r"block_tag.txt", math.floor(vi))
+        #print("vi: ",vi)
+        print('vi,ai: ',vi,ai)
+        line = linecache.getline(r"block_tag.txt", 1)
+        print(line)
+        #print(line)
         mvi = line[line.find("<[")+2:line.find("]>")]
         tvi = line[line.find("[")+1:line.find("]")]
-        print("mvi ",mvi)
-        print("tvi ",tvi)
-        TAll = TAll* math.pow((int(tvi)),ai)
+        #print(tvi)
+        mvi = int(Decimal(mvi))
+        tvi = int(Decimal(tvi))
+
+        print("mvi :D",mvi)
+        print("tvi :D",tvi)
+        TAll = TAll* math.pow((int(tvi)),int(ai))
         print("TALL: ", TAll)
         FAll += ai*int(mvi)
+        print("FALL: ", FAll)
         i+=1
         P = [FAll, TAll]
-    #print("P: ",P)
-    return P
+    return P,ai,vi
 
 def verify(y,X, g, u, fid, c, k1, k2, FAll, TAll):
-    start = timeit.default_timer()
-    enc_check = hash(math.pow(int(X),int(y)))  
+    enc_check = hash(math.pow(int(X),int(y)))    
     TAll = 1
     FAll = 1    
     hashcheck = 1
@@ -157,75 +81,164 @@ def verify(y,X, g, u, fid, c, k1, k2, FAll, TAll):
         print("vi ",math.floor(vi))
         ai = phi(int(concat(str(k2),str(i)))) # choose random params
         print("ai ",math.floor(ai))
-        line = linecache.getline(r"block_tag.txt", math.floor(vi))
+        line = linecache.getline(r"block_tag.txt", math.floor(1))
         mvi = line[line.find("<[")+2:line.find("]>")]
         tvi = line[line.find("[")+1:line.find("]")]
         print("mvi ",mvi)
         print("tvi ",tvi)
-        TAll = TAll* math.pow((int(tvi)),ai)
+        TAll = TAll* math.pow((Decimal(tvi)),Decimal(ai))
         print("TALL: ", TAll)
         FAll += ai*int(mvi)
         hashcheck *= hash(str(enc_check)+str(fid)+str(vi))**ai
         i+=1
     
     b_right = hashcheck*math.pow(u,FAll)
-    g1, g2 = G.gen1(), G.gen2()
-    #b_leftside = G.pair(TAll, g) 
-    #b_rightside = G.pair(b_right, X)
-    #print(g1)
-    #print(g2)
-    gt = G.pair(g1, g2)
-    TAll = int((TAll)/100000000000000000000000000000000000000)
-    #TAll = int((TAll))
-    #print(TAll)
-    #print('g: ',g)
-    #gt6 = (gt**TAll)
-    #gt7 = (gt**1000)
-    b_right = int((b_right)/100**127)
-    #b_right = int((b_right))
-    #print('b_right ',b_right)
-    gt67 = G.pair(g1*TAll, g2*g) 
-    #print('X: ',X)
-    gt89 = G.pair(g1*b_right, g2*1)
-    #G.pair(gt67, gt6)
-    #b_right = int(b_right)
-    print(gt67, gt89)
-    if(gt67 != gt89):
-        print('true')
+    b_leftside = G.pair((TAll), g) 
+    b_rightside = G.pair(b_right, X)
+    if(b_leftside == b_rightside):
+        return 1
     else:
-        print('false')
-    stop = timeit.default_timer()
-    runtime = stop -start
-    print('runtime ver: ', runtime)
-    # if(G.pair(g1, 6*g2) == gt6):
-    #     print('true')
-    #b_leftside = G.pair("1", "1") 
-    # #b_rightside = G.pair("1", "1")
-    # if(b_leftside == b_rightside):
-    #     return 1
-    # else:
-    #     return 0
-
-# ==== test =====
-#print(c,k1,k2)
-g,u,x,X,y,Y = MainHere('1')
-c,k1,k2 = challenge(2)
-FAll,TAll = ProofGen(1,c,2,3)
-verify(y,X,g,u,1,c, k1 ,k2, FAll, TAll)
-#print("FAll: ",FAll)
-#print("TAll: ",TAll)
-# ==== test =====
-
-# k1 = challenge
-# k2 = challenge
-#print(c,k1,k2)
-#ProofGen(T,c,k1,k2)
+        return 0
+    
 
 
+for i in range(1000,10001,1000):
+    filename = "p01000.json"
+    x = random.randint(1,3)
+    y = random.randint(1,3)
+    g = random.randint(1,3)
+    u = random.randint(1,3)
+    print("======= ",i," =======")
+    numattr = i
+    j = str(i)
+    while(len(j) < 5):
+        j = "0"+ j
+    with open('./testpatient/p{}.txt'.format(j),'r') as file:
+        doc = file.read()
 
-f = open("test.txt", "r")
-f = str(f)
+    # filename = "file.txt"
+    # with open('file.json','r') as file:
+    #     doc = file.read()
+    #doc = json.loads(doc)
+    id = int(j)
+    #doc = json.dumps(doc)
+    # with open('file.txt','r') as file:
+    #     doc = file.read()
+    numblock = i*300
+    array_blocks = []
 
-#KeyGen()
-
+    #convert doc to byte
+    doc_byte = str.encode(doc)
+    doc_byte = (doc_byte[:i]) if len(doc_byte) > i else doc_byte
+    doc_Binary = ''.join([bin(b)[2:] for b in doc_byte])
+    #print(len(doc_Binary))
+    lenperblock = math.ceil(len(doc_Binary) / numblock)
+    #print(lenperblock)
+    temp_doc_Binary = doc_Binary
+    #cut part of binary and put into the block
+    while(temp_doc_Binary != ""): 
+        array_blocks.append(temp_doc_Binary[:lenperblock])
+        temp_doc_Binary = temp_doc_Binary[lenperblock:]
+    #print(array_blocks)
+    #print(len(array_blocks))
+    j = random.randint(0,len(array_blocks))
+    #randomly pick 1 block
+    mj = array_blocks[j]
+    mj = int(mj,2)
+    # generate Zq*
+    ZqStar = []
+    k = random.randint(0,len(array_blocks))
+    for i in range(k):
+        pickchoice = random.randint(0,len(array_blocks)-1)
+        ZqStar.append(array_blocks[pickchoice])
+    si_index = random.randint(0,len(ZqStar)-1)
+    ii = si_index
+    #print("ii ",ii)
+    #print(xi_index)
+    mi = ZqStar[si_index]
+    #print("Si: ",si)
+    m = int(mi,2)
+    # print("x ",x)
+    # print("y ",y)
+    # print("g ",g)
+    # print("u ",u)
+    #x = x/10
+    #y = y/5
+    #g = g/10
+    startX = timeit.default_timer()
+    X = Decimal(math.pow(g,x))
+    stopX = timeit.default_timer()
+    runtimeX = stopX-startX
+    #print("Time(EXP X): ",runtimeX)
+    
+    startY = timeit.default_timer()
+    Y = Decimal(math.pow(g,y))
+    stopY = timeit.default_timer()
+    runtimeY = stopY-startY
+    #print("Time(EXP Y): ",runtimeY)
+    #print("X ",X)
+    #print("Y ",Y)
+    fid = "1"
+    
+    startENC = timeit.default_timer()
+    enc = hash(math.pow(Y,x))
+    stopENC = timeit.default_timer()
+    runtimeENC = stopENC-startENC
+    #print("Time(EXP ENC): ",runtimeENC)
+    
+    hoho = int(concat(concat(str(enc),str(fid)),str(ii)))
+    # print("hoho ",hoho)
+    #print("mi ",mi)
+    gg = True
+    while(gg == True):
+        if(int(mi) >= 50):
+            si_index = random.randint(0,len(ZqStar)-1)
+            mi = ZqStar[si_index]
+            gg = True
+            # print(mi)
+        else:
+            gg = False
+            # print(mi)
+    #print('right: ',Decimal(int(u)**int(mi)))
+    
+    startT = timeit.default_timer()
+    Ti = math.pow(hash(hoho)*math.pow(int(u),int(mi)),int(x))
+    stopT = timeit.default_timer()
+    runtimeT = stopT-startT
+    #print("Time(EXP Ti): ",runtimeT)
+    #print('rumtime EXP: ', runtimeX+runtimeY+runtimeT+runtimeENC)
+    
+    txt = (f'[{Ti}]<[{mi}]>')
+    with open('block_tag.txt', "a") as tagpair:
+        tagpair.write(txt+'\n')
+        tagpair.close()
+    
+    startM = timeit.default_timer()
+    mul = math.pow(hash(hoho)*math.pow(int(u),int(mi)),int(x))
+    stopM = timeit.default_timer()
+    runtimeM = stopM-startM
+    #print("Time(MUL): ",runtimeM)
+    
+    chal = challenge(2)
+    
+    print('chal: ',chal)
+    
+    c = chal[0]
+    k1 = chal[1]
+    k2 = chal[2]
+    
+    print("here: ",c,k1,k2)
+    
+    P,ai,vi = ProofGen(c,k1,k2)
+    
+    #print('P: ',P)
+    
+    FAll = P[0]
+    TAll = P[1]
+    
+    result = verify(y,X, g, u, fid, c, k1, k2, FAll, TAll)
+    
+    print('verify result: ', result)
+    
+    #verify_out = verify(y,X, g, u, fid, c, k1, k2, FAll, TAll)
     

@@ -13,15 +13,17 @@ def XOR (a, b):
 def Sign(CT_byte,certid,id_MD):
     
     #hash the CT
+    start = timeit.default_timer()
     CT_MD = hashlib.sha256(CT_byte).hexdigest()
     CT_MD_byte = str.encode(CT_MD)
     #import pubkey
     f = open('{}_RSA_pubkey.pem'.format(certid),'r')
-
     pubkey = RSA.import_key(f.read())
     CT_RSA_Pubkey = PKCS1_OAEP.new(pubkey)
     #encrypt MD with RSA -> Get DS
     DS_byte = CT_RSA_Pubkey.encrypt(CT_MD_byte)
+    stop = timeit.default_timer()
+    runtime2 = stop-start
 
     DS = DS_byte.decode('ISO-8859-1')
     #start = timeit.default_timer()
@@ -30,9 +32,11 @@ def Sign(CT_byte,certid,id_MD):
     DS_Binary = ''.join([bin(b)[2:] for b in encoded_bytes])
 
     lenDSBinary = len(DS_Binary)
-    
+    start = timeit.default_timer()
     #generate R value
     R = ''.join(choice('01') for _ in range(lenDSBinary))
+    stop = timeit.default_timer()
+    runtime3 = stop-start
     # XOR DS_Binary with R value
     
     DS_XOR_R_Binary = ""
@@ -58,12 +62,13 @@ def Sign(CT_byte,certid,id_MD):
     #Get R1
     
     R1_Binary = ""
-    start = timeit.default_timer()
+    #start = timeit.default_timer()
     for i in range(len(R)):
         temp1 = XOR(R[i],constR[i])
         R1_Binary += str(temp1)
-    stop = timeit.default_timer()
-    runtime2 = stop-start
+    print(len(R1_Binary))
+    #stop = timeit.default_timer()
+    #runtime2 = stop-start
     #print(runtime2)
     #Transform binary to text
     binary_int = int(R1_Binary, 2)
@@ -100,5 +105,5 @@ def Sign(CT_byte,certid,id_MD):
     # else: #There is no audit log for this document
     #     log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
     #     mycol.insert_one(log)
-    runtimexor = runtime1+runtime2
+    runtimexor = runtime1+runtime2+runtime3
     return DS_XOR_R_text, R1_text, runtimexor

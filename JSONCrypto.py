@@ -31,11 +31,11 @@ def encryptjson(data_string,certid):
     #stop = timeit.default_timer()
     #print('Enc Time: ', stop - start)
     #encrypt SymKey with CP-ABE PubKey
-    cpabe.encrypt(id)
+    cpabe.encrypt_key(id)
     
     #rename encrypted symkey file to be able to read the file
-    p = subprocess.call(["mv", "{}_key.txt.cpabe".format(id), "{}_key.txt".format(id)])
-    
+    #p = subprocess.call(["mv", "{}_key.txt.cpabe".format(id), "{}_key.txt".format(id)])
+    p = subprocess.call(["mv", "./Symkeys/{}_key.txt.cpabe".format(id), "./Symkeys/{}_key.txt".format(id)])
     #-----Begin Signing Phase------
     DS_XOR_R, R1 = SigningPhase.Sign(CT_byte,certid, id_MD)
 

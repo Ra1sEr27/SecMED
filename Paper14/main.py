@@ -4,6 +4,9 @@ import random
 from sympy import airyaiprime
 from sympy.ntheory.factor_ import totient
 import linecache
+from bplib.bp import BpGroup
+
+G = BpGroup()
 # def gcd(a, b):
 #     if (a == 0):
 #         return b
@@ -68,10 +71,11 @@ def ProofGen(chal):
     return P,ai,vi
 
 def verify(wj,PKi,ID,mj,P0,ai,vi):
-    eq1 = hash(wj) + PKi + hash(ID)**mj + P0
-    #print(eq1)
-    eq2 = hash(wj)**ai + PKi + hash(ID)+P0
-    #print(eq2)
+    g1, g2 = G.gen1(), G.gen2()
+    eq1 = G.pair(g1*hash(wj),g2*PKi) + G.pair(g1*(hash(ID)**mj),g2*P0)
+    print("eq1: ",eq1)
+    eq2 = G.pair(hash(wj)**ai,PKi) + G.pair(hash(ID),P0)
+    print("eq2: ",eq2)
     if eq1 == eq2:
         #print("True")
         return True
@@ -137,16 +141,21 @@ for i1 in range(1000,10001,1000):
         #print("Si: ",len(si))
         s = int(si,2)
         #print("S: ",s)
-        start = timeit.default_timer()
+
         P0 = int(array_blocks[si_index],2)**s
         #print("P0: ",P0)
+        start = timeit.default_timer()
         Di = hash(id**s)
+        stop = timeit.default_timer()
+        runtimeexp1 = stop-start
         #--Generate PKi
         g = random.randint(1,5)
         PKi = g**s
+        start = timeit.default_timer()
         wj,Tj = TagGen(filename, array_blocks,Di,mj,s)
         stop = timeit.default_timer()
-        runtimeexp1 = stop-start
+        runtimeexp2 = stop-start
+        
         #--store Di and Tj in log file
         with open('Logfile.json','r') as file:
             doc = file.read()
@@ -172,11 +181,11 @@ for i1 in range(1000,10001,1000):
         # print(Di)
         # wj = doc[Di]
         # print(wj)
-        start = timeit.default_timer()
-        output = verify(wj,PKi,id,mj,P0,ai,vi)
-        stop = timeit.default_timer()
-        runtimeexp2 = stop-start
-        totalruntime = 2*(runtimeexp1+runtimeexp2)+runtimemul1+runtimemul2
+        # start = timeit.default_timer()
+        # output = verify(wj,PKi,id,mj,P0,ai,vi)
+        # stop = timeit.default_timer()
+        # runtimeexp2 = stop-start
+        totalruntime = 2*(runtimeexp1+runtimeexp2)
         runtimelist.append(totalruntime)
     runtimelist.sort()
     for i2 in range(len(runtimelist)):
