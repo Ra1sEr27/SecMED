@@ -1,11 +1,2 @@
-import binascii
-  
-# Initializing a binary string
-Text = b"GFG is a CS Portal"
-print(Text)
-# Calling the b2a_uu() function to
-# Convert the binary string to ascii
-Ascii = binascii.b2a_uu(Text)
-  
-# Getting the ASCII equivalent
-print(Ascii)
+test_string = '1101100110000110110110011000001011011000101001111101100010101000'
+print ('%x' % int(test_string, 2)).decode('hex').decode('utf-8')

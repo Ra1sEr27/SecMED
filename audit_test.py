@@ -5,7 +5,9 @@ from Crypto.Cipher import PKCS1_OAEP
 import base64, hashlib, random, timeit, pymongo, datetime, json, math
 from random import choice
 import binascii
+from base64 import b64decode,b64encode
 
+from sympy import dsolve
 client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
 #client = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = client['EncryptedMTR']
@@ -21,13 +23,16 @@ def XOR (a, b):
         return 1
     else:
         return 0
-
-document_audit = mycol_audit.find_one({'MD_id': "a4d5e07e23b14fef41dbb972621cf67d2fc47e6614f6c61bc0b598ac474343c5"})
+patient = "p0000"
+patient= str.encode(patient)
+hash_patient = hashlib.sha256(patient).hexdigest()
+document_audit = mycol_audit.find_one({'MD_id': hash_patient})
+#document_audit = mycol_audit.find_one({'MD_id': "a4d5e07e23b14fef41dbb972621cf67d2fc47e6614f6c61bc0b598ac474343c5"})
 timestamp = ''
 for i in document_audit:
     if (i[0:2] == "20"):
         timestamp = timestamp+i
-print(timestamp)
+#print(timestamp)
 #time = document[3]
 R1 = document_audit[timestamp]['R1']
 #print(len(R1))
@@ -43,6 +48,7 @@ for i in range(len(R1)):
     R += str(temp1)
 #print("R = ",R)
 DS_R = document_audit[timestamp]['DS*R']
+#print(DS_R)
 # XOR DS_Binary with R value
 DS = ''
 for i in range(len(DS_R)):
@@ -52,30 +58,51 @@ for i in range(len(DS_R)):
 #print("DS_R =",DS_R)
 #print("R =",R)
 #print("DS =",DS)
+
+#reverse DS to MD
 audit_priv = document_audit[timestamp]['PrivKey']
 #print(audit_priv)
 certid = "DO0000"
-with open('./RSAKeyCloud/{}_RSA_pubkey.pem'.format(certid),'w') as file:
+with open('./RSAKeyCloud/{}_RSA_privkey.pem'.format(certid),'w') as file:
     file.write(audit_priv)
-f = open('{}_RSA_pubkey.pem'.format(certid),'r')
+f = open('{}_RSA_privkey.pem'.format(certid),'r')
 
-pubkey = RSA.import_key(f.read())
-CT_RSA_Pubkey = PKCS1_OAEP.new(pubkey)
+privkey = RSA.import_key(f.read())
+CT_RSA_Privkey = PKCS1_OAEP.new(privkey)
 #encrypt MD with RSA -> Get DS
-print(hex(int(DS, 2)))
-binary_int = int(DS, 2)
+# DS_byte = str.encode(DS)
+# print(DS_byte)
+
+# DS = binascii.b2a_base64(DS_byte)
+print(DS)
+#print(len(DS))
+DS_split = ' '.join([DS[i:i+8] for i in range(0, len(DS), 8)])
+    
+#print(DS_split)
+ascii_string = "".join([chr(int(binary, 2)) for binary in DS_split.split(" ")])
+print("DS: ",ascii_string)
+ascii_byte = str.encode(ascii_string, encoding='ISO-8859-1')
+#print(ascii_byte)
+#print(len(ascii_byte))
+#binary_int = int(DS, 2)
+  
 # Getting the byte number
-#print(binary_int)
-byte_number = binary_int.bit_length()
-#print(byte_number)
-# Getting an array of bytes
-binary_array = binary_int.to_bytes(190, "big")
-#print("BA: ",binary_array)
-DS_text = binary_array.decode('ISO-8859-1')
-#DS_byte = DS_text.encode()
-#print(len(DS_text)) 
-DS_byte = CT_RSA_Pubkey.decrypt(DS_text)
-#print(DS_byte)
+# byte_number = binary_int.bit_length()
+  
+# # Getting an array of bytes
+# binary_array = binary_int.to_bytes(128, "big")
+# #print(binary_array)
+# #print(len(binary_array)) 
+# # Converting the array into ASCII text
+# ascii_text = binary_array.decode('ISO-8859-1')
+#print(ascii_text)
+#DS_text = ascii(ascii_text)
+#print(len(DS_text))
+#DS_byte = b64encode(binary_array)
+#print(DS_byte) 
+#testDS = b'\x0b\xab\x02\x9e\xfb\xe2\xcc\x96\xbc\xaaJ\xda<\x14\xdcZP\x06\x8c\xd3E*\x99\xf6"\xd9"jz\xd3\xa1\x07\x1a|?\xdbU\xa8\x94R\x83U_\xe8\xf0xYf]\x06\xcet\xf1?\x9d\x16Lp7\x9a\x12\xab\xcb\xcf\x9e.\x8c\x9e\xcf\x1c\xb9\xfe\x15\x8b\xfc\x00\xa1\xa9b\x93\xd6e\xfe\x04\xa4\xa3\x8c\xb5\xd1g\x93"\xfa$\xf4\xbc\x97\x04}\x07\x988_\x02D\x13\xedn\t\xc9\xbaS\x1e\xee\xfa\xa3\x8b\rsr\x9e+{#\xa3(\x1a\x02'
+MD_byte = CT_RSA_Privkey.decrypt(ascii_byte)
+print(MD_byte)
 '''
 CT_RSA_Pubkey = PKCS1_OAEP.new(audit_priv)
 #encrypt MD with RSA -> Get DS

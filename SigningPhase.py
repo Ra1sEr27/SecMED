@@ -22,64 +22,87 @@ def Sign(CT_byte,certid,id_MD):
     CT_RSA_Pubkey = PKCS1_OAEP.new(pubkey)
     #encrypt MD with RSA -> Get DS
     #print("1: ",CT_MD_byte)
+    #print("OriMD: ",CT_MD_byte)
     DS_byte = CT_RSA_Pubkey.encrypt(CT_MD_byte)
-    print(DS_byte)
-    print("Length: ",len(DS_byte))
+    #print("DSByte:",DS_byte)
+    
+    #print("Length DS Byte: ",len(DS_byte))
     DS = DS_byte.decode('ISO-8859-1')
-    # print("2:",DS)
+    print("DS: ",DS)
+    # for i in range(len(DS)):
+    #     print("DS index: ",DS[i])
+    # #print("Len DS: ",len(DS))
+    # DS_byte1 = str.encode(DS)
     # f = open('{}_RSA_privkey.pem'.format(certid),'r')
     # privkey = RSA.import_key(f.read())
     # CT_RSA_Privkey = PKCS1_OAEP.new(privkey)
     # #encrypt MD with RSA -> Get DS
-    # DS_byte = CT_RSA_Privkey.decrypt(DS_byte)
-    # print("3: ",DS_byte)
+    # MD2 = CT_RSA_Privkey.decrypt(DS_byte1)
+    # #print("3: ",DS_byte1)
+    # #DS1 = DS_byte1.decode('ISO-8859-1')
+    # print("MD2:",MD2)
+
+
     #start = timeit.default_timer()
-    encoded_bytes = DS.encode(encoding='utf-8')
+    #encoded_bytes = DS.encode(encoding='utf-8')
     #Convert DS to binary string
-    DS_Binary = ''.join([bin(b)[2:] for b in encoded_bytes])
-    #print(DS_Binary)
-    lenDSBinary = len(DS_Binary)
+    #print("encodedbytes: ",encoded_bytes)
+    #DS_Binary = ''.join([bin(b)[2:] for b in DS_byte])
+    #print("DS Binary: ",DS_Binary)
+    #print("Len DS Bi: ",len(DS_Binary))
+
+    # DS_split = ' '.join([DS_Binary[i:i+8] for i in range(0, len(DS_Binary), 8)])
+    # ascii_string = "".join([chr(int(binary, 2)) for binary in DS_split.split(" ")])
+    # print("DS1: ",ascii_string)
+
+    #print("DS: ",int(DS_Binary,2))
+    #lenDSBinary = len(DS_Binary)
     
     #generate R value
-    R = ''.join(choice('01') for _ in range(lenDSBinary))
-    # XOR DS_Binary with R value
-    
-    DS_XOR_R_Binary = ""
-    for i in range(len(DS_Binary)):
-        temp1 = XOR(DS_Binary[i],R[i])
-        DS_XOR_R_Binary += str(temp1)
-    binary_int = int(DS_XOR_R_Binary, 2)
-    # Getting the byte number
-    byte_number = binary_int.bit_length() + 7 // 8
-    # Getting an array of bytes
-    binary_array = binary_int.to_bytes(byte_number, "big")
-    #print("BA: ",binary_array)
-    
-    # Converting the array into ASCII text
-    DS_XOR_R_text = binary_array.decode('ISO-8859-1')
-    # print(len(DS_XOR_R_text))
-    # binary_array_enc = CT_RSA_Pubkey.encrypt(DS_XOR_R_text)
-    # print("BA: ",binary_array_enc)
-    #print(DS_XOR_R_text)
+    R = []
+    DS_R = ""
+    while(len(R) != len(DS)):
+        pickindex = random.randint(0,len(DS)-1)
+        if pickindex not in R:
+            R.append(pickindex)
+            DS_R +=DS[pickindex]
+    print(len(R))
+    print("R: ",R)
+    print("DS_R: ",DS_R)
     #Define constant R
-    constR = "111011101110011010000100101111000101000100100101111001010000110010010000110110001111000110010001101111010100010010101110000101000101110100001001011010111100001001110111011101110101111011111011111110010010101010010001101010001000000011001001001111000100100100001001000111011001111001111110100101011111011001101101100110111100111100011100011100011010000010101010011010000011100001011011110011010010001010000010111001010001110011010010000000001001101100010001110111111101100111100000010110000101000011010110010001111000001010011001001001100001101101000101101010010010001101111111011001111111010000011010011101001100001010011111101100011010111101001001100001001100011000001011100010011111010110110100010111011100001100111000101000110110100010111100100111011001101000010100111010100010010011111010110010000111111001010001111111011001110110000001000100010011101010110011001001111011000101001111110111111110010110000111010110000100011001101001000000001101011100110100000000101110001001100000111100111000101110010011001100110110001110001110101100000111000011011010101001111010001110011110110000001101101010100111101000111001111011000"
-    constR += constR
+    constR = [27, 40, 6, 9, 68, 107, 123, 49, 22, 31, 127, 79, 85, 34, 71, 26, 0, 115, 121, 110, 74, 5, 36, 63, 73, 76, 39, 112, 111, 53, 70, 4, 65, 48, 126, 117, 52, 109, 67, 35, 95, 72, 94, 86, 50, 10, 118, 105, 90, 33, 102, 88, 113, 32, 61, 92, 122, 29, 16, 28, 119, 1, 114, 83, 98, 18, 77, 62, 45, 80, 38, 8, 42, 99, 13, 69, 96, 17, 20, 91, 25, 106, 19, 30, 47, 15, 3, 37, 56, 41, 46, 124, 87, 75, 89, 120, 100, 81, 97, 11, 60, 21, 104, 59, 93, 43, 66, 55, 78, 101, 64, 82, 12, 116, 7, 44, 23, 14, 58, 2, 51, 24, 108, 103, 57, 84, 54, 125]
     #Get R1
     
-    R1_Binary = ""
+    R1 = []
     for i in range(len(R)):
-        temp1 = XOR(R[i],constR[i])
-        R1_Binary += str(temp1)
-    #print("R1: ",R1_Binary)
-    #print(len(R1_Binary))
-    #Transform binary to text
-    binary_int = int(R1_Binary, 2)
-    # Getting the byte number
-    byte_number = binary_int.bit_length() + 7 // 8
-    # Getting an array of bytes
-    binary_array = binary_int.to_bytes(byte_number, "big")
-    R1_text = binary_array.decode('ISO-8859-1')
-    #print("R1: ",R1_text)
+        R1.append(R[constR[i]])
+    #print("R1: ",R1)
+
+    #---reverse
+    testR = []
+    for i in range(128):
+        j = 0
+        while constR[j] != i:
+            #print(constR[j])
+            j+=1
+        #print("index:",j)
+        testR.append(R1[j])
+    #print("testR: ",testR)
+    #--Get DS
+    newDS = ""
+    for i in range(128):
+        j = 0
+        while testR[j] != i:
+            #print(constR[j])
+            j+=1
+        #print("index:",j)
+        newDS+=DS_R[j]
+    #print("newDS: ",newDS)
+    if newDS == DS:
+        print("True")
+    else:
+        print("False")
+
     #stop = timeit.default_timer()
     #print('DSXORR & R1 Time: ', stop - start)
 
@@ -95,7 +118,7 @@ def Sign(CT_byte,certid,id_MD):
     privkey_string = privkey_byte.decode('ISO-8859-1')
     
     curtimedate = str(datetime.datetime.now())
-    update = {'certid': '{}'.format(certid), 'PrivKey': '{}'.format(privkey_string), 'DS*R': '{}'.format(DS_XOR_R_Binary), 'R1': '{}'.format(R1_Binary)}
+    update = {'certid': '{}'.format(certid), 'PrivKey': '{}'.format(privkey_string), 'DS*R': '{}'.format(DS_R), 'R1': '{}'.format(R1)}
     existedLog = mycol.find_one({'MD_id': id_MD})
     #stop = timeit.default_timer()
     #print('Signing Time: ', stop - start)
@@ -107,4 +130,4 @@ def Sign(CT_byte,certid,id_MD):
     else: #There is no audit log for this document
         log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
         mycol.insert_one(log)
-    return DS_XOR_R_Binary, R1_Binary
+    return DS_R, R1

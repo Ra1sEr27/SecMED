@@ -58,8 +58,8 @@ def ProofGen(chal):
         mvi = line[line.find("<[")+2:line.find("]>")]
         tvi = line[line.find("[")+1:line.find("]")]
         #print(tvi)
-        #print("mvi ",mvi)
-        #print("tvi ",tvi)
+        print("mvi: ",mvi)
+        print("tvi: ",tvi)
 
         Tj = Tj* math.pow((int(tvi)),ai)
         #print("TALL: ", TAll)
@@ -160,19 +160,27 @@ for i1 in range(1000,10001,1000):
         with open('Logfile.json','r') as file:
             doc = file.read()
         doc = json.loads(doc)
-        doc[Di] = wj
+        doc[j] = wj
         doc = json.dumps(doc)
         with open('Logfile.json','w') as file:
             file.write(doc)
 
+        #--store block and tag
+        with open('block_tag.json','r') as file:
+            doc = file.read()
+        doc = json.loads(doc)
+        doc[Tj] = array_blocks
+        doc = json.dumps(doc)
+        with open('block_tag.json','w') as file:
+            file.write(doc)
         #--Begin challenging
-        chal = challenge(array_blocks,ZqStar)
-        #print(chal)
-        #--Begin ProofGen
-        start = timeit.default_timer()
-        P,ai,vi = ProofGen(chal)
-        stop = timeit.default_timer()
-        runtimemul2 = stop-start
+        # chal = challenge(array_blocks,ZqStar)
+        # #print(chal)
+        # #--Begin ProofGen
+        # start = timeit.default_timer()
+        # P,ai,vi = ProofGen(chal)
+        # stop = timeit.default_timer()
+        # runtimemul2 = stop-start
         #--Begin verification
         # with open('Logfile.json','r') as file:
         #     doc = file.read()
