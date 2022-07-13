@@ -28,11 +28,11 @@ def findDoc(id):
     #print("Byte SK: ",enc_SK)
     # enc_SK.decode("ISO-8859-1")
     # print(enc_SK)
-    with open('{}_key.txt.cpabe'.format(id),'wb') as file:
+    with open('./SymkeyCloud/{}_key.txt.cpabe'.format(id),'wb') as file:
         file.write(enc_SK)
     #Decrypt the enc_Symkey
-    cpabe.decrypt("{}_key.txt.cpabe".format(id))
-    with open('{}_key.txt'.format(id),'r') as file:
+    cpabe.decrypt("./SymkeyCloud/{}_key.txt.cpabe".format(id))
+    with open('./SymkeyCloud/{}_key.txt'.format(id),'r') as file:
         Symkey = file.read()
     fernet = Fernet(Symkey)
     PT_byte= fernet.decrypt(CT_byte)
@@ -47,7 +47,7 @@ def findDoc(id):
     # print(Symkey)
     #print(PT_json)
     #print(type(PT_json))
-    return PT_json
+    return PT_json,id_MD
 
 def findDocTime():
     client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
@@ -108,4 +108,4 @@ def findDocTime():
     #print(type(PT_json))
     return PT_json
 
-findDoc("p0000")
+#findDoc("p0000")

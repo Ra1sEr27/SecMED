@@ -4,11 +4,11 @@ from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 import base64, hashlib, random, timeit, pymongo, datetime, json, math
 from random import choice
-def XOR (a, b):
-    if a != b:
-        return 1
-    else:
-        return 0
+# def XOR (a, b):
+#     if a != b:
+#         return 1
+#     else:
+#         return 0
 
 def Sign(CT_byte,certid,id_MD):
     #start = timeit.default_timer()
@@ -21,42 +21,9 @@ def Sign(CT_byte,certid,id_MD):
     pubkey = RSA.import_key(f.read())
     CT_RSA_Pubkey = PKCS1_OAEP.new(pubkey)
     #encrypt MD with RSA -> Get DS
-    #print("1: ",CT_MD_byte)
-    #print("OriMD: ",CT_MD_byte)
     DS_byte = CT_RSA_Pubkey.encrypt(CT_MD_byte)
-    #print("DSByte:",DS_byte)
-    
-    #print("Length DS Byte: ",len(DS_byte))
+
     DS = DS_byte.decode('ISO-8859-1')
-    print("DS: ",DS)
-    # for i in range(len(DS)):
-    #     print("DS index: ",DS[i])
-    # #print("Len DS: ",len(DS))
-    # DS_byte1 = str.encode(DS)
-    # f = open('{}_RSA_privkey.pem'.format(certid),'r')
-    # privkey = RSA.import_key(f.read())
-    # CT_RSA_Privkey = PKCS1_OAEP.new(privkey)
-    # #encrypt MD with RSA -> Get DS
-    # MD2 = CT_RSA_Privkey.decrypt(DS_byte1)
-    # #print("3: ",DS_byte1)
-    # #DS1 = DS_byte1.decode('ISO-8859-1')
-    # print("MD2:",MD2)
-
-
-    #start = timeit.default_timer()
-    #encoded_bytes = DS.encode(encoding='utf-8')
-    #Convert DS to binary string
-    #print("encodedbytes: ",encoded_bytes)
-    #DS_Binary = ''.join([bin(b)[2:] for b in DS_byte])
-    #print("DS Binary: ",DS_Binary)
-    #print("Len DS Bi: ",len(DS_Binary))
-
-    # DS_split = ' '.join([DS_Binary[i:i+8] for i in range(0, len(DS_Binary), 8)])
-    # ascii_string = "".join([chr(int(binary, 2)) for binary in DS_split.split(" ")])
-    # print("DS1: ",ascii_string)
-
-    #print("DS: ",int(DS_Binary,2))
-    #lenDSBinary = len(DS_Binary)
     
     #generate R value
     R = []
@@ -66,9 +33,10 @@ def Sign(CT_byte,certid,id_MD):
         if pickindex not in R:
             R.append(pickindex)
             DS_R +=DS[pickindex]
-    print(len(R))
-    print("R: ",R)
-    print("DS_R: ",DS_R)
+    # print(len(R))
+    # print("R: ",R)
+    # print("DS_R: ",DS_R)
+
     #Define constant R
     constR = [27, 40, 6, 9, 68, 107, 123, 49, 22, 31, 127, 79, 85, 34, 71, 26, 0, 115, 121, 110, 74, 5, 36, 63, 73, 76, 39, 112, 111, 53, 70, 4, 65, 48, 126, 117, 52, 109, 67, 35, 95, 72, 94, 86, 50, 10, 118, 105, 90, 33, 102, 88, 113, 32, 61, 92, 122, 29, 16, 28, 119, 1, 114, 83, 98, 18, 77, 62, 45, 80, 38, 8, 42, 99, 13, 69, 96, 17, 20, 91, 25, 106, 19, 30, 47, 15, 3, 37, 56, 41, 46, 124, 87, 75, 89, 120, 100, 81, 97, 11, 60, 21, 104, 59, 93, 43, 66, 55, 78, 101, 64, 82, 12, 116, 7, 44, 23, 14, 58, 2, 51, 24, 108, 103, 57, 84, 54, 125]
     #Get R1

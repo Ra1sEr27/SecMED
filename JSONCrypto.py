@@ -18,8 +18,8 @@ def encryptjson(data_string,certid):
     id_byte = str.encode(id)
     #generate Symkey
     symkey = keygenerator.symkeygenerator(id)
-    with open('{}_key.txt'.format(id),'wb') as file:
-        file.write(symkey)
+    # with open('{}_key.txt'.format(id),'wb') as file:
+    #     file.write(symkey)
     # this encrypts the data read from your json and stores it in 'encrypted'
     #start = timeit.default_timer()
     CT_byte= Fernet(symkey).encrypt(data_byte)
@@ -34,27 +34,30 @@ def encryptjson(data_string,certid):
     cpabe.encrypt_key(id)
     
     #rename encrypted symkey file to be able to read the file
-    #p = subprocess.call(["mv", "{}_key.txt.cpabe".format(id), "{}_key.txt".format(id)])
     p = subprocess.call(["mv", "./Symkeys/{}_key.txt.cpabe".format(id), "./Symkeys/{}_key.txt".format(id)])
-    #-----Begin Signing Phase------
-    DS_XOR_R, R1 = SigningPhase.Sign(CT_byte,certid, id_MD)
-
+    
     #read the encrypted SymKey
-    with open('{}_key.txt'.format(id),'rb') as file:
+    with open('./Symkeys/{}_key.txt'.format(id),'rb') as file:
         enc_Symkey = file.read()
+
     #convert byte to string for storing in the DB
     enc_Symkey = enc_Symkey.decode("ISO-8859-1")
+
     #rename the symkey file
-    p = subprocess.call(["mv", "{}_key.txt".format(id), "{}_key.txt.cpabe".format(id)])
+    p = subprocess.call(["mv", "./Symkeys/{}_key.txt".format(id), "./Symkeys/{}_key.txt.cpabe".format(id)])
 
     #Decrypt the local Symkey
-    cpabe.decrypt(id)
+    cpabe.decrypt("./Symkeys/{}_key.txt.cpabe".format(id))
+
+    #-----Begin Signing Phase------
+    DS_XOR_R, R1 = SigningPhase.Sign(CT_byte,certid, id_MD)
+    
     # Form a JSON document for storing on cloud
     doc = {'MD_id': '{}'.format(id_MD), 'CT': '{}'.format(CT), 'enc_SK': '{}'.format(enc_Symkey),
     'DS*R': '{}'.format(DS_XOR_R), 'R1': '{}'.format(R1)}
     stop = timeit.default_timer()
     print('Enc Time: ', stop - start)
-    #print(doc)
+    #print(doc['enc_SK'])
     return doc
 
 # def decryptjson(key,doc):

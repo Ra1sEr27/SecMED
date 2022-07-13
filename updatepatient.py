@@ -3,7 +3,7 @@ from cryptography.fernet import Fernet
 import pymongo
 import json
 import os
-import findDoc
+import findDoc,SigningPhase
 import JSONCrypto
 
 
@@ -11,8 +11,9 @@ def updatePatient(pid,certid):
     client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
     db = client['EncryptedMTR']
     patientcol = db['patient']
+    auditlogcol = db['AuditLog']
     #Enter patient name
-    wanteddoc = findDoc.findDoc(pid)
+    wanteddoc,id_MD = findDoc.findDoc(pid)
     if wanteddoc == "":
         print("The wanted document is not found, please try again")
         exit()
@@ -58,7 +59,9 @@ def updatePatient(pid,certid):
                                 # os.remove(f.name)
                                 # with open('./section{}-patient/{}_{}.json'.format(patientdb[7],pid,wanteddoc["name"]),'w') as file:
                                 #     file.write(edited_wanteddoc_string_sorted)
+                                
                                 print("The document has been saved to {}".format(patientcol.name))
+                                
                             except(pymongo.http.ServerError):
                                 print("Cannot save the document")
                             break
