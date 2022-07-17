@@ -4,11 +4,11 @@ from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 import base64, hashlib, random, timeit, pymongo, datetime, json, math
 from random import choice
-def XOR (a, b):
-    if a != b:
-        return 1
-    else:
-        return 0
+# def XOR (a, b):
+#     if a != b:
+#         return 1
+#     else:
+#         return 0
 
 def Sign(CT_byte,certid,id_MD):
     
@@ -23,80 +23,51 @@ def Sign(CT_byte,certid,id_MD):
     #encrypt MD with RSA -> Get DS
     DS_byte = CT_RSA_Pubkey.encrypt(CT_MD_byte)
     stop = timeit.default_timer()
-    runtime2 = stop-start
+    runtime1 = stop-start
 
     DS = DS_byte.decode('ISO-8859-1')
     #start = timeit.default_timer()
-    encoded_bytes = DS.encode(encoding='utf-8')
-    #Convert DS to binary string
-    DS_Binary = ''.join([bin(b)[2:] for b in encoded_bytes])
-
-    lenDSBinary = len(DS_Binary)
-    start = timeit.default_timer()
     #generate R value
-    R = ''.join(choice('01') for _ in range(lenDSBinary))
-    stop = timeit.default_timer()
-    runtime3 = stop-start
-    # XOR DS_Binary with R value
-    
-    DS_XOR_R_Binary = ""
     start = timeit.default_timer()
-    for i in range(1000):
-        temp1 = XOR(DS_Binary[i],R[i])
-        DS_XOR_R_Binary += str(temp1)
+    R = []
+    DS_R = ""
+    while(len(R) != len(DS)):
+        pickindex = random.randint(0,len(DS)-1)
+        if pickindex not in R:
+            R.append(pickindex)
+            DS_R +=DS[pickindex]
     stop = timeit.default_timer()
-    runtime1 = stop-start
-    #print(runtime1)
-    binary_int = int(DS_XOR_R_Binary, 2)
-    # Getting the byte number
-    byte_number = binary_int.bit_length() + 7 // 8
-    # Getting an array of bytes
-    binary_array = binary_int.to_bytes(byte_number, "big")
+    runtime2 = stop-start
+    # print(len(R))
+    # print("R: ",R)
+    # print("DS_R: ",DS_R)
 
-    # Converting the array into ASCII text
-    DS_XOR_R_text = binary_array.decode('ISO-8859-1')
-    
     #Define constant R
-    constR = "111011101110011010000100101111000101000100100101111001010000110010010000110110001111000110010001101111010100010010101110000101000101110100001001011010111100001001110111011101110101111011111011111110010010101010010001101010001000000011001001001111000100100100001001000111011001111001111110100101011111011001101101100110111100111100011100011100011010000010101010011010000011100001011011110011010010001010000010111001010001110011010010000000001001101100010001110111111101100111100000010110000101000011010110010001111000001010011001001001100001101101000101101010010010001101111111011001111111010000011010011101001100001010011111101100011010111101001001100001001100011000001011100010011111010110110100010111011100001100111000101000110110100010111100100111011001101000010100111010100010010011111010110010000111111001010001111111011001110110000001000100010011101010110011001001111011000101001111110111111110010110000111010110000100011001101001000000001101011100110100000000101110001001100000111100111000101110010011001100110110001110001110101100000111000011011010101001111010001110011110110000001101101010100111101000111001111011000"
-    constR += constR
+    constR = [27, 40, 6, 9, 68, 107, 123, 49, 22, 31, 127, 79, 85, 34, 71, 26, 0, 115, 121, 110, 74, 5, 36, 63, 73, 76, 39, 112, 111, 53, 70, 4, 65, 48, 126, 117, 52, 109, 67, 35, 95, 72, 94, 86, 50, 10, 118, 105, 90, 33, 102, 88, 113, 32, 61, 92, 122, 29, 16, 28, 119, 1, 114, 83, 98, 18, 77, 62, 45, 80, 38, 8, 42, 99, 13, 69, 96, 17, 20, 91, 25, 106, 19, 30, 47, 15, 3, 37, 56, 41, 46, 124, 87, 75, 89, 120, 100, 81, 97, 11, 60, 21, 104, 59, 93, 43, 66, 55, 78, 101, 64, 82, 12, 116, 7, 44, 23, 14, 58, 2, 51, 24, 108, 103, 57, 84, 54, 125]
     #Get R1
     
-    R1_Binary = ""
-    #start = timeit.default_timer()
+    R1 = []
     for i in range(len(R)):
-        temp1 = XOR(R[i],constR[i])
-        R1_Binary += str(temp1)
-    print(len(R1_Binary))
-    #stop = timeit.default_timer()
-    #runtime2 = stop-start
-    #print(runtime2)
-    #Transform binary to text
-    binary_int = int(R1_Binary, 2)
-    # Getting the byte number
-    byte_number = binary_int.bit_length() + 7 // 8
-    # Getting an array of bytes
-    binary_array = binary_int.to_bytes(byte_number, "big")
-    R1_text = binary_array.decode('ISO-8859-1')
-    #print("R1: ",R1_text)
+        R1.append(R[constR[i]])
     # stop = timeit.default_timer()
     # runtime = stop - start
     
     #-------Audit Log part---------
-    # client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
-    # mydb = client['EncryptedMTR']
-    # mycol = mydb['AuditLog']
+    client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
+    mydb = client['EncryptedMTR']
+    mycol = mydb['AuditLogPerf']
     
-    # #get private key from local, convert to string for storing on database
-    # f = open('{}_RSA_privkey.pem'.format(certid),'r')
-    # privkey = RSA.import_key(f.read())
-    # privkey_byte = privkey.exportKey("PEM")
-    # privkey_string = privkey_byte.decode('ISO-8859-1')
+    #get private key from local, convert to string for storing on database
+    f = open('{}_RSA_privkey.pem'.format(certid),'r')
+    privkey = RSA.import_key(f.read())
+    privkey_byte = privkey.exportKey("PEM")
+    privkey_string = privkey_byte.decode('ISO-8859-1')
     
-    # curtimedate = str(datetime.datetime.now())
-    # update = {'certid': '{}'.format(certid), 'PrivKey': '{}'.format(privkey_string), 'DS*R': '{}'.format(DS_XOR_R_text), 'R1': '{}'.format(R1_text)}
-    # existedLog = mycol.find_one({'MD_id': id_MD})
-    # #stop = timeit.default_timer()
-    # #print('Signing Time: ', stop - start)
+    curtimedate = str(datetime.datetime.now())
+    update = {'certid': '{}'.format(certid), 'PrivKey': '{}'.format(privkey_string), 'DS*R': '{}'.format(DS_R), 'R1': '{}'.format(R1)}
+    existedLog = mycol.find_one({'MD_id': id_MD})
+    #stop = timeit.default_timer()
+    #print('Signing Time: ', stop - start)
     # if  type(existedLog) != type(None):  #If the audit log of file is existed then update the log
     #     existedLog[curtimedate] = update
     #     mycol.delete_one({'MD_id': id_MD})
@@ -105,5 +76,5 @@ def Sign(CT_byte,certid,id_MD):
     # else: #There is no audit log for this document
     #     log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
     #     mycol.insert_one(log)
-    runtimexor = runtime1+runtime2+runtime3
-    return DS_XOR_R_text, R1_text, runtimexor
+    runtimeshuff = runtime1+runtime2
+    return DS_R, R1, runtimeshuff
