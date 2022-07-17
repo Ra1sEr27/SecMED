@@ -92,13 +92,22 @@ def verify(y,X, g, u, fid, c, k1, k2, FAll, TAll):
         hashcheck *= hash(str(enc_check)+str(fid)+str(vi))**ai
         i+=1
     
-    b_right = hashcheck*math.pow(u,FAll)
+    # g1, g2 = G.gen1(), G.gen2()
+    # print('type ',type(g1))
+    # gt = G.pair(g1, g2)
+    # print(gt)
+    # if(gt == gt):
+    #     print('true')
+    # b_right = hashcheck*math.pow(u,FAll)
+    TAll = (TAll/10**200)
+    # g = g2*g   
+    # X = g2+X
     b_leftside = G.pair((TAll), g) 
-    b_rightside = G.pair(b_right, X)
-    if(b_leftside == b_rightside):
-        return 1
-    else:
-        return 0
+    # b_rightside = G.pair(b_right, X)
+    # if(b_leftside == b_rightside):
+    #     return 1
+    # else:
+    #     return 0
     
 
 

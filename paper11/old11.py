@@ -160,7 +160,7 @@ def verify(y,X, g, u, fid, c, k1, k2, FAll, TAll):
         FAll += ai*int(mvi)
         hashcheck *= Decimal(hash(str(enc_check)+str(fid)+str(vi))**ai)
         i+=1
-    b_right = hashcheck*math.pow(int(u),int(FAll))
+    b_right = hashcheck*math.pow((u),(FAll))
     g1, g2 = G.gen1(), G.gen2()
     b_leftside = G.pair(TAll, g) 
     b_rightside = G.pair(b_right, X)
@@ -189,8 +189,8 @@ def verify(y,X, g, u, fid, c, k1, k2, FAll, TAll):
     #stop = timeit.default_timer()
     #runtime = stop -start
     #print('runtime ver: ', runtime)
-    b_leftside = G.pair("1", "1") 
-    b_rightside = G.pair("1", "1")
+    # b_leftside = G.pair("1", "1") 
+    # b_rightside = G.pair("1", "1")
     if(b_leftside == b_rightside):
         return 1
     else:

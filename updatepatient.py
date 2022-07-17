@@ -11,8 +11,7 @@ def updatePatient(pid,certid):
     client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
     db = client['EncryptedMTR']
     patientcol = db['patient']
-    auditlogcol = db['AuditLog']
-    #Enter patient name
+
     wanteddoc,id_MD = findDoc.findDoc(pid)
     if wanteddoc == "":
         print("The wanted document is not found, please try again")

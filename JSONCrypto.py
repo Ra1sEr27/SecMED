@@ -50,7 +50,7 @@ def encryptjson(data_string,certid):
     cpabe.decrypt("./Symkeys/{}_key.txt.cpabe".format(id))
 
     #-----Begin Signing Phase------
-    DS_XOR_R, R1 = SigningPhase.Sign(CT_byte,certid, id_MD)
+    DS_XOR_R, R1 = SigningPhase.Sign(CT_byte,CT,certid, id_MD)
     
     # Form a JSON document for storing on cloud
     doc = {'MD_id': '{}'.format(id_MD), 'CT': '{}'.format(CT), 'enc_SK': '{}'.format(enc_Symkey),

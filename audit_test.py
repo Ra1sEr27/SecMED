@@ -6,7 +6,7 @@ import base64, hashlib, random, timeit, pymongo, datetime, json, math
 from random import choice
 import binascii
 from base64 import b64decode,b64encode
-
+from ast import literal_eval
 from sympy import dsolve
 client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
 #client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -17,106 +17,114 @@ mycol_patient = mydb['patient']
 item_details = mycol_audit.find()
 templist = []
 thislist = []
-no =0
-def XOR (a, b):
-    if a != b:
-        return 1
-    else:
-        return 0
+
 patient = "p0000"
 patient= str.encode(patient)
 hash_patient = hashlib.sha256(patient).hexdigest()
 document_audit = mycol_audit.find_one({'MD_id': hash_patient})
 #document_audit = mycol_audit.find_one({'MD_id': "a4d5e07e23b14fef41dbb972621cf67d2fc47e6614f6c61bc0b598ac474343c5"})
+times = 0
+
 timestamp = ''
+No = 0
 for i in document_audit:
     if (i[0:2] == "20"):
+        #print(No)
         timestamp = timestamp+i
-#print(timestamp)
-#time = document[3]
-R1 = document_audit[timestamp]['R1']
-#print(len(R1))
-#print("R1=",R1)
-#print(type(R1))
-#R1 = use the R*1 from the input ID
+        print(timestamp)
+        R1 = document_audit[timestamp]['R1']
+        R1 = literal_eval(R1)
+        #print("R1 =", R1)
+        constR = [27, 40, 6, 9, 68, 107, 123, 49, 22, 31, 127, 79, 85, 34, 71, 26, 0, 115, 121, 110, 74, 5, 36, 63, 73, 76, 39, 112, 111, 53, 70, 4, 65, 48, 126, 117, 52, 109, 67, 35, 95, 72, 94, 86, 50, 10, 118, 105, 90, 33, 102, 88, 113, 32, 61, 92, 122, 29, 16, 28, 119, 1, 114, 83, 98, 18, 77, 62, 45, 80, 38, 8, 42, 99, 13, 69, 96, 17, 20, 91, 25, 106, 19, 30, 47, 15, 3, 37, 56, 41, 46, 124, 87, 75, 89, 120, 100, 81, 97, 11, 60, 21, 104, 59, 93, 43, 66, 55, 78, 101, 64, 82, 12, 116, 7, 44, 23, 14, 58, 2, 51, 24, 108, 103, 57, 84, 54, 125]
 
-constR = "111011101110011010000100101111000101000100100101111001010000110010010000110110001111000110010001101111010100010010101110000101000101110100001001011010111100001001110111011101110101111011111011111110010010101010010001101010001000000011001001001111000100100100001001000111011001111001111110100101011111011001101101100110111100111100011100011100011010000010101010011010000011100001011011110011010010001010000010111001010001110011010010000000001001101100010001110111111101100111100000010110000101000011010110010001111000001010011001001001100001101101000101101010010010001101111111011001111111010000011010011101001100001010011111101100011010111101001001100001001100011000001011100010011111010110110100010111011100001100111000101000110110100010111100100111011001101000010100111010100010010011111010110010000111111001010001111111011001110110000001000100010011101010110011001001111011000101001111110111111110010110000111010110000100011001101001000000001101011100110100000000101110001001100000111100111000101110010011001100110110001110001110101100000111000011011010101001111010001110011110110000001101101010100111101000111001111011000"
-constR = constR + constR 
-R = "" 
-for i in range(len(R1)):
-    temp1 = XOR(R1[i],constR[i])
-    R += str(temp1)
-#print("R = ",R)
-DS_R = document_audit[timestamp]['DS*R']
-#print(DS_R)
-# XOR DS_Binary with R value
-DS = ''
-for i in range(len(DS_R)):
-    temp1 = XOR(DS_R[i],R[i])
-    DS += str(temp1)
-#print(len(DS))
-#print("DS_R =",DS_R)
-#print("R =",R)
-#print("DS =",DS)
+        #---reverse
+        R = []
+        for i in range(128):
+            j = 0
+            while constR[j] != i:
+                #print(constR[j])
+                j+=1
+            #print("index:",j)
+            R.append(R1[j])
+        #print("testR: ",testR)
+        print("R = ",R)
+        DS_R = document_audit[timestamp]['DS*R']
+        #print(DS_R)
+        DS = ""
+        for i in range(128):
+            j = 0
+            while R[j] != i:
+                #print(constR[j])
+                j+=1
+            #print("index:",j)
+            DS+=DS_R[j]
+        #print("testR: ",testR)
+        #print("DS = ",DS)
 
-#reverse DS to MD
-audit_priv = document_audit[timestamp]['PrivKey']
-#print(audit_priv)
-certid = "DO0000"
-with open('./RSAKeyCloud/{}_RSA_privkey.pem'.format(certid),'w') as file:
-    file.write(audit_priv)
-f = open('{}_RSA_privkey.pem'.format(certid),'r')
+        # get private key
+        audit_priv = document_audit[timestamp]['PrivKey']
+        #print('audit_priv =', audit_priv)
+        
+        certid = document_audit[timestamp]['certid']
+        print('certid =',certid)
+        #print(certid)
+        with open('./RSAKeyCloud/{}_RSA_privkey.pem'.format(certid),'w') as file:
+            file.write(audit_priv)
+        f = open('./RSAKeyCloud/{}_RSA_privkey.pem'.format(certid),'r')
+        privkey = RSA.import_key(f.read())
+        CT_RSA_Privkey = PKCS1_OAEP.new(privkey)
+        #encrypt MD with RSA -> Get DS
+        DS_byte = str.encode(DS, encoding = 'ISO-8859-1')
+        #print(len(DS_byte))
+        #encrypt MD with RSA -> Get DS
+        MD = CT_RSA_Privkey.decrypt(DS_byte)
+        MD = MD.decode('ISO-8859-1')
+        print("MD from reversing=",MD)
+        #---------------------------------------------------------------------
+        # patientid = 'p0000'
+        # patientid= str.encode(patientid)
+        # hash_patientid = hashlib.sha256(patientid).hexdigest()
+        # #print("hash patient ID=", hash_patientid)
+        # document_patient = mycol_patient.find_one({'MD_id': hash_patient})
+        # patient_CT = document_patient['CT']
+        patient_CT = document_audit[timestamp]['CT']
+        patient_CT_byte = str.encode(patient_CT)
+        hash_patient_CT = hashlib.sha256(patient_CT_byte).hexdigest()
+        print("hash patient CT= ",hash_patient_CT)
+        #----------------------------------------------------------------------
+        if (MD == hash_patient_CT):
+            print("true")
+        else:
+            print("false")
+        No = No + 1
+    timestamp = ''
+        # DS = binascii.b2a_base64(DS_byte)
+        #print(DS)
+        #print(len(DS))
 
-privkey = RSA.import_key(f.read())
-CT_RSA_Privkey = PKCS1_OAEP.new(privkey)
-#encrypt MD with RSA -> Get DS
-# DS_byte = str.encode(DS)
-# print(DS_byte)
+        # Getting the byte number
+        # byte_number = binary_int.bit_length()
+        
+        # # Getting an array of bytes
+        # binary_array = binary_int.to_bytes(128, "big")
+        # #print(binary_array)
+        # #print(len(binary_array)) 
+        # # Converting the array into ASCII text
+        # ascii_text = binary_array.decode('ISO-8859-1')
+        #print(ascii_text)
+        #DS_text = ascii(ascii_text)
+        #print(len(DS_text))
+        #DS_byte = b64encode(binary_array)
+        #print(DS_byte) 
+        #testDS = b'\x0b\xab\x02\x9e\xfb\xe2\xcc\x96\xbc\xaaJ\xda<\x14\xdcZP\x06\x8c\xd3E*\x99\xf6"\xd9"jz\xd3\xa1\x07\x1a|?\xdbU\xa8\x94R\x83U_\xe8\xf0xYf]\x06\xcet\xf1?\x9d\x16Lp7\x9a\x12\xab\xcb\xcf\x9e.\x8c\x9e\xcf\x1c\xb9\xfe\x15\x8b\xfc\x00\xa1\xa9b\x93\xd6e\xfe\x04\xa4\xa3\x8c\xb5\xd1g\x93"\xfa$\xf4\xbc\x97\x04}\x07\x988_\x02D\x13\xedn\t\xc9\xbaS\x1e\xee\xfa\xa3\x8b\rsr\x9e+{#\xa3(\x1a\x02'
+        #MD_byte = CT_RSA_Privkey.decrypt(ascii_byte)
+        #print(MD_byte)
 
-# DS = binascii.b2a_base64(DS_byte)
-print(DS)
-#print(len(DS))
-DS_split = ' '.join([DS[i:i+8] for i in range(0, len(DS), 8)])
-    
-#print(DS_split)
-ascii_string = "".join([chr(int(binary, 2)) for binary in DS_split.split(" ")])
-print("DS: ",ascii_string)
-ascii_byte = str.encode(ascii_string, encoding='ISO-8859-1')
-#print(ascii_byte)
-#print(len(ascii_byte))
-#binary_int = int(DS, 2)
-  
-# Getting the byte number
-# byte_number = binary_int.bit_length()
-  
-# # Getting an array of bytes
-# binary_array = binary_int.to_bytes(128, "big")
-# #print(binary_array)
-# #print(len(binary_array)) 
-# # Converting the array into ASCII text
-# ascii_text = binary_array.decode('ISO-8859-1')
-#print(ascii_text)
-#DS_text = ascii(ascii_text)
-#print(len(DS_text))
-#DS_byte = b64encode(binary_array)
-#print(DS_byte) 
-#testDS = b'\x0b\xab\x02\x9e\xfb\xe2\xcc\x96\xbc\xaaJ\xda<\x14\xdcZP\x06\x8c\xd3E*\x99\xf6"\xd9"jz\xd3\xa1\x07\x1a|?\xdbU\xa8\x94R\x83U_\xe8\xf0xYf]\x06\xcet\xf1?\x9d\x16Lp7\x9a\x12\xab\xcb\xcf\x9e.\x8c\x9e\xcf\x1c\xb9\xfe\x15\x8b\xfc\x00\xa1\xa9b\x93\xd6e\xfe\x04\xa4\xa3\x8c\xb5\xd1g\x93"\xfa$\xf4\xbc\x97\x04}\x07\x988_\x02D\x13\xedn\t\xc9\xbaS\x1e\xee\xfa\xa3\x8b\rsr\x9e+{#\xa3(\x1a\x02'
-MD_byte = CT_RSA_Privkey.decrypt(ascii_byte)
-print(MD_byte)
-'''
-CT_RSA_Pubkey = PKCS1_OAEP.new(audit_priv)
-#encrypt MD with RSA -> Get DS
-DS_byte = CT_RSA_Pubkey.decrypt(CT_MD_byte)
+        # CT_RSA_Pubkey = PKCS1_OAEP.new(audit_priv)
+        # #encrypt MD with RSA -> Get DS
+        # DS_byte = CT_RSA_Pubkey.decrypt(CT_MD_byte)
 
 
 
-#--------------------------------------------------------------
-patient = "p0000"
-patient= str.encode(patient)
-hash_patient = hashlib.sha256(patient).hexdigest()
-document_patient = mycol_patient.find_one({'MD_id': hash_patient})
-patient_CT = document_patient['CT']
-hash_patient_CT = str.encode(patient_CT)
-hash_patient_CT = hashlib.sha256(hash_patient_CT).hexdigest()
-print(hash_patient_CT)
-'''
+        #--------------------------------------------------------------
+

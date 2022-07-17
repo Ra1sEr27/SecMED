@@ -22,10 +22,12 @@ def Sign(CT_byte,certid,id_MD):
     CT_RSA_Pubkey = PKCS1_OAEP.new(pubkey)
     #encrypt MD with RSA -> Get DS
     DS_byte = CT_RSA_Pubkey.encrypt(CT_MD_byte)
+    #print(DS_byte)
     stop = timeit.default_timer()
     runtime1 = stop-start
 
     DS = DS_byte.decode('ISO-8859-1')
+    print(len(DS))
     #start = timeit.default_timer()
     #generate R value
     start = timeit.default_timer()

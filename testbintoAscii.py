@@ -1,2 +1,0 @@
-test_string = '1101100110000110110110011000001011011000101001111101100010101000'
-print ('%x' % int(test_string, 2)).decode('hex').decode('utf-8')
