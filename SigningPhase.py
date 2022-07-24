@@ -47,29 +47,29 @@ def Sign(CT_byte,CT,certid,id_MD):
     #print("R1: ",R1)
 
     #---reverse
-    testR = []
-    for i in range(128):
-        j = 0
-        while constR[j] != i:
-            #print(constR[j])
-            j+=1
-        #print("index:",j)
-        testR.append(R1[j])
-    #print("testR: ",testR)
-    #--Get DS
-    newDS = ""
-    for i in range(128):
-        j = 0
-        while testR[j] != i:
-            #print(constR[j])
-            j+=1
-        #print("index:",j)
-        newDS+=DS_R[j]
-    #print("newDS: ",newDS)
-    if newDS == DS:
-        print("True")
-    else:
-        print("False")
+    # testR = []
+    # for i in range(128):
+    #     j = 0
+    #     while constR[j] != i:
+    #         #print(constR[j])
+    #         j+=1
+    #     #print("index:",j)
+    #     testR.append(R1[j])
+    # #print("testR: ",testR)
+    # #--Get DS
+    # newDS = ""
+    # for i in range(128):
+    #     j = 0
+    #     while testR[j] != i:
+    #         #print(constR[j])
+    #         j+=1
+    #     #print("index:",j)
+    #     newDS+=DS_R[j]
+    # #print("newDS: ",newDS)
+    # if newDS == DS:
+    #     print("True")
+    # else:
+    #     print("False")
 
     #stop = timeit.default_timer()
     #print('DSXORR & R1 Time: ', stop - start)

@@ -45,15 +45,15 @@ def insertpatient():
         }
     """
     certid = "DO0000"
-    with open('./Patients/p0000_Intira Preecha.json','r') as file:
+    with open('./Patients/p0009.json','r') as file:
         doc = file.read()
     doc = json.loads(doc)
     doc_string = json.dumps(doc)
         
     doc_encrypted = JSONCrypto.encryptjson(doc_string,certid)
 
-    id = mycol.insert_one(doc_encrypted)
-    print("The document has been saved (id: {}).".format(id.inserted_id))
+    # id = mycol.insert_one(doc_encrypted)
+    # print("The document has been saved (id: {}).".format(id.inserted_id))
 #     confirm = input("Do you want to insert the encrypted document? (y/n): ")
 #     if confirm == "y":
 #         id = mycol.insert_one(doc_encrypted)

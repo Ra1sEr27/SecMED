@@ -60,11 +60,12 @@ def insertpatient():
             j = "0"+ j
         id = "p"+j
         #doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid,start,i)
+        #doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid,start,i)
         runtime_list = []
         for k in range(10):
             #start = time.time()
             #encrypt the document
-            doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid,start,i)
+            doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid)
             #stop = time.time()
             #runtime = stop - start
             #print(doc)
@@ -79,7 +80,7 @@ def insertpatient():
         for i1 in range(len(runtime_list)):
             if runtime_list[i1] > prevLeastRuntime:
                 #print('EncTime({}): '.format(i), runtime_list[i1])
-                print('XORTime({}): '.format(i), runtime_list[i1])
+                print('Time({}): '.format(i), runtime_list[i1])
                 prevLeastRuntime = runtime_list[i1]
                 break
 

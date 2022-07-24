@@ -10,7 +10,7 @@ from random import choice
 #     else:
 #         return 0
 
-def Sign(CT_byte,certid,id_MD):
+def Sign(CT_byte,CT,certid,id_MD):
     
     #hash the CT
     start = timeit.default_timer()
@@ -27,7 +27,7 @@ def Sign(CT_byte,certid,id_MD):
     runtime1 = stop-start
 
     DS = DS_byte.decode('ISO-8859-1')
-    print(len(DS))
+    #print(len(DS))
     #start = timeit.default_timer()
     #generate R value
     start = timeit.default_timer()
@@ -66,7 +66,7 @@ def Sign(CT_byte,certid,id_MD):
     privkey_string = privkey_byte.decode('ISO-8859-1')
     
     curtimedate = str(datetime.datetime.now())
-    update = {'certid': '{}'.format(certid), 'PrivKey': '{}'.format(privkey_string), 'DS*R': '{}'.format(DS_R), 'R1': '{}'.format(R1)}
+    update = {'certid': '{}'.format(certid),'CT':'{}'.format(CT), 'PrivKey': '{}'.format(privkey_string), 'DS*R': '{}'.format(DS_R), 'R1': '{}'.format(R1)}
     existedLog = mycol.find_one({'MD_id': id_MD})
     #stop = timeit.default_timer()
     #print('Signing Time: ', stop - start)

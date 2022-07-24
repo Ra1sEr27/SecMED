@@ -108,4 +108,4 @@ def findDocTime():
     #print(type(PT_json))
     return PT_json
 
-#findDoc("p0000")
+findDoc("p0009")

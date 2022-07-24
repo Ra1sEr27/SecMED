@@ -5,7 +5,7 @@ import json
 import hashlib, rsa
 import SigningPhasePerf
 import os, subprocess, cpabe, keygenerator, timeit,time
-def encryptjson(pid,certid,start,i):
+def encryptjson(pid,certid):
     #start = timeit.default_timer()
     #--------Begin Encryption Phase----------
     #convert string to JSON
@@ -39,7 +39,7 @@ def encryptjson(pid,certid,start,i):
     p = subprocess.call(["mv", "./Symkeys/{}_key.txt.cpabe".format(pid), "./Symkeys/{}_key.txt".format(pid)])
     
     #-----Begin Signing Phase------
-    DS_XOR_R, R1, runtimexor = SigningPhasePerf.Sign(CT_byte,certid, id_MD)
+    DS_R, R1, runtimexor = SigningPhasePerf.Sign(CT_byte,CT,certid, id_MD)
     #stop = time.time()
     #print("Time({}): ".format(i),stop-start)
     #read the encrypted SymKey
@@ -53,7 +53,7 @@ def encryptjson(pid,certid,start,i):
     cpabe.decrypt("./Symkeys/{}_key.txt.cpabe".format(pid))
     # Form a JSON document for storing on cloud
     doc = {'MD_id': '{}'.format(id_MD), 'CT': '{}'.format(CT), 'enc_SK': '{}'.format(enc_Symkey),
-    'DS*R': '{}'.format(DS_XOR_R), 'R1': '{}'.format(R1)}
+    'DS*R': '{}'.format(DS_R), 'R1': '{}'.format(R1)}
     #stop = timeit.default_timer()
     #runtime = stop - start
     #print(doc)
