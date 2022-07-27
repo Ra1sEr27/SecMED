@@ -15,7 +15,7 @@ def encryptjson(pid,certid):
     symkey = keygenerator.symkeygenerator(pid)
     with open('./Symkeys/{}_key.txt'.format(pid),'wb') as file:
         file.write(symkey)
-    with open('./testpatient/{}.txt'.format(pid),'r') as file:
+    with open('./Patient160/{}.json'.format(pid),'r') as file:
         doc = file.read()
     doc_byte = str.encode(doc, encoding="ISO-8859-1")
     # this encrypts the data read from your json and stores it in 'encrypted'

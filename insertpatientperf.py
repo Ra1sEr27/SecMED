@@ -10,7 +10,7 @@ def insertpatient():
     # connect to MongoDB
     client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.oexkw.mongodb.net/section1?retryWrites=true&w=majority")
     mydb = client['EncryptedMTR']
-    mycol = mydb['patientperf']
+    mycol = mydb['patientperf160']
     """
     doc_count = mycol.count_documents({})
     patient_id_num = str(doc_count)
@@ -47,49 +47,49 @@ def insertpatient():
     """
     certid = "DO0000"
     start = time.time()
-    with open('./testpatient/p00000.json','r') as file:
+    with open('./Patient160/p0000.json','r') as file:
         doc = file.read()
     doc = json.loads(doc)
     prevLeastRuntime = 0
-    for i in range(1000,10001,1000):
+    for i in range(1,161):
         #print(doc_string)
         #runtime_xbar = 0
         #leastruntime = 2
         j = str(i)
-        while(len(j) < 5):
+        while(len(j) < 4):
             j = "0"+ j
         id = "p"+j
         #doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid,start,i)
-        #doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid,start,i)
-        runtime_list = []
-        for k in range(10):
-            #start = time.time()
-            #encrypt the document
-            doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid)
-            #stop = time.time()
-            #runtime = stop - start
-            #print(doc)
-            #runtime_list.append(runtime)
-            runtime_list.append(DSRR1runtime)
-            # if runtime < leastruntime:
-            #     leastruntime = runtime
-            #runtime_xbar += runtime
-        # runtime_xbar = runtime_xbar / 10
-        # print(runtime_list)
-        runtime_list.sort()
-        for i1 in range(len(runtime_list)):
-            if runtime_list[i1] > prevLeastRuntime:
-                #print('EncTime({}): '.format(i), runtime_list[i1])
-                print('Time({}): '.format(i), runtime_list[i1])
-                prevLeastRuntime = runtime_list[i1]
-                break
+        doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid)
+        # runtime_list = []
+        # for k in range(10):
+        #     #start = time.time()
+        #     #encrypt the document
+        #     doc_encrypted, DSRR1runtime = JSONCryptoPerf.encryptjson(id,certid)
+        #     #stop = time.time()
+        #     #runtime = stop - start
+        #     #print(doc)
+        #     #runtime_list.append(runtime)
+        #     runtime_list.append(DSRR1runtime)
+        #     # if runtime < leastruntime:
+        #     #     leastruntime = runtime
+        #     #runtime_xbar += runtime
+        # # runtime_xbar = runtime_xbar / 10
+        # # print(runtime_list)
+        # runtime_list.sort()
+        # for i1 in range(len(runtime_list)):
+        #     if runtime_list[i1] > prevLeastRuntime:
+        #         #print('EncTime({}): '.format(i), runtime_list[i1])
+        #         print('Time({}): '.format(i), runtime_list[i1])
+        #         prevLeastRuntime = runtime_list[i1]
+        #         break
 
         # doc_encrypted = json.dumps(doc_encrypted)
         # with open('./testpatientCT/{}.txt'.format(id),'w') as file:
         #     file.write(doc_encrypted)
             #print('EncTime({}): '.format(i), runtime_xbar)
-        #id = mycol.insert_one(doc_encrypted)
-        #print("The document has been saved (id: {}).".format(id.inserted_id))
+        id = mycol.insert_one(doc_encrypted)
+        print("The document has been saved (id: {}).".format(id.inserted_id))
 #     confirm = input("Do you want to insert the encrypted document? (y/n): ")
 #     if confirm == "y":
 #         id = mycol.insert_one(doc_encrypted)
