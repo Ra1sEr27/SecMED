@@ -12,25 +12,39 @@ client = pymongo.MongoClient("mongodb+srv://Nontawat:iS1sKbQnyLO6CWDE@section1.o
 #client = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = client['EncryptedMTR']
 Data_owner_list = []
-mycol_audit = mydb['AuditLog']
-mycol_patient = mydb['patient']
+mycol_audit = mydb['AuditLogPerf']
+mycol_patient = mydb['patientperf160']
 item_details = mycol_audit.find()
 templist = []
 thislist = []
-patient_list = ['p0000','p0001','p0002','p0003','p0004','p0005','p0006','p0007','p0008','p0009']
+patient_list = []
+
+for i in range (0,160):
+    if i < 10:
+        temp = "p000" + str(i)
+        patient_list.append(temp)
+    elif (i < 100) and (i >= 10):
+        temp = "p00" + str(i)
+        patient_list.append(temp)
+    elif (i <1000 ) and (i >= 100):
+        temp = "p0" + str(i)
+        patient_list.append(temp)
+#print(patient_list)
 
 prevLeastRuntime = 0
-for k in range (1,11):
+for k in range (10,161,10):
     runtime_list = []
     for k1 in range(10):
         runtime_total = 0
         for j in range (0,k): 
-            
             patient = patient_list[j]
+            #print(patient)
             patient= str.encode(patient)
+            #print(patient)
             hash_patient = hashlib.sha256(patient).hexdigest()
-            document_audit = mycol_audit.find_one({'MD_id': hash_patient})
-            #document_audit = mycol_audit.find_one({'MD_id': "a4d5e07e23b14fef41dbb972621cf67d2fc47e6614f6c61bc0b598ac474343c5"})
+            #print(hash_patient)
+            #document_audit = mycol_audit.find_one({'MD_id': hash_patient})
+            document_audit = mycol_audit.find_one({'MD_id': "a4d5e07e23b14fef41dbb972621cf67d2fc47e6614f6c61bc0b598ac474343c5"})
             times = 0
             timestamp = ''
             No = 0

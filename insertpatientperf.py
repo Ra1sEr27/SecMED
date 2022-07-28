@@ -51,7 +51,7 @@ def insertpatient():
         doc = file.read()
     doc = json.loads(doc)
     prevLeastRuntime = 0
-    for i in range(1,161):
+    for i in range(161):
         #print(doc_string)
         #runtime_xbar = 0
         #leastruntime = 2
