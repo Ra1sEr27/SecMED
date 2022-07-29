@@ -132,6 +132,6 @@ for k in array_request:
     for i1 in range(len(runtime_list)):
         if runtime_list[i1] > prevLeastRuntime:
             #print('EncTime({}): '.format(i), runtime_list[i1])
-            print('Time({}): '.format(k), runtime_list[i1])
+            print('Time({})(ms): '.format(k), runtime_list[i1]*1000)
             prevLeastRuntime = runtime_list[i1]
             break
