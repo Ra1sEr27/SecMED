@@ -54,12 +54,12 @@ def insertpatient():
         pid = "p"+ j
         runtime_list = []
         for k in range(10):
-            start = time.time()
+            #start = time.time()
             #encrypt the document
-            #doc_encrypted, DSRR1runtime = CPABECryptoPerf.encryptjson(doc_string,certid)
-            cpabe.encrypt_text(pid)
-            stop = time.time()
-            runtime = stop - start
+            doc_encrypted, runtime = CPABECryptoPerf.encryptjson(pid,certid)
+            #cpabe.encrypt_text(pid)
+            #stop = time.time()
+            #runtime = stop - start
             #print(doc_encrypted)
             #runtime_list.append(DSRR1runtime)
             runtime_list.append(runtime)
@@ -72,13 +72,13 @@ def insertpatient():
         runtime_list.sort()
         for i1 in range(len(runtime_list)):
             if runtime_list[i1] > prevLeastRuntime:
-                print('EncTime({}): '.format(i), runtime_list[i1])
+                print('EncTime({})(s): '.format(i), runtime_list[i1])
                 #print('DSRR1Time({}): '.format(i), runtime_list[i1])
                 prevLeastRuntime = runtime_list[i1]
                 break
             #print('EncTime({}): '.format(i), runtime_xbar)
-            #id = mycol.insert_one(doc_encrypted)
-            #print("The document has been saved (id: {}).".format(id.inserted_id))
+        #id = mycol.insert_one(doc_encrypted)
+        #print("The document has been saved (id: {}).".format(id.inserted_id))
 #     confirm = input("Do you want to insert the encrypted document? (y/n): ")
 #     if confirm == "y":
 #         id = mycol.insert_one(doc_encrypted)

@@ -70,13 +70,13 @@ def Sign(CT_byte,CT,certid,id_MD):
     existedLog = mycol.find_one({'MD_id': id_MD})
     stop = timeit.default_timer()
     #print('Signing Time: ', stop - start)
-    if  type(existedLog) != type(None):  #If the audit log of file is existed then update the log
-        existedLog[curtimedate] = update
-        mycol.delete_one({'MD_id': id_MD})
-        mycol.insert_one(existedLog)
-        #existedLog[curtimedate] = update
-    else: #There is no audit log for this document
-        log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
-        mycol.insert_one(log)
+    # if  type(existedLog) != type(None):  #If the audit log of file is existed then update the log
+    #     existedLog[curtimedate] = update
+    #     mycol.delete_one({'MD_id': id_MD})
+    #     mycol.insert_one(existedLog)
+    #     #existedLog[curtimedate] = update
+    # else: #There is no audit log for this document
+    #     log = {'MD_id': '{}'.format(id_MD), '{}'.format(curtimedate): update}
+    #     mycol.insert_one(log)
     runtimeshuff = runtime1+runtime2
     return DS_R, R1, runtimeshuff

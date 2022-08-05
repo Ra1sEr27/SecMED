@@ -9,11 +9,11 @@ def encrypt_text(id):
 # def decrypt_key(id):
 #     p = subprocess.call(["cpabe-dec", "pub_key", "DO00000_priv_key", "./Symkeys/{}_key.txt.cpabe".format(id)])
 def decrypt(file):
-    p = subprocess.call(["cpabe-dec", "pub_key", "./CP-ABE keys/DO00000_priv_key", "{}".format(file)])
+    p = subprocess.call(["cpabe-dec", "-k","pub_key", "./cpabe_keys/DO00000_priv_key", "{}".format(file)])
 def keygen(id,policy):
-    p = subprocess.call(["cpabe-keygen", "-o","./CP-ABE keys/{}_priv_key".format(id),"pub_key","cpabe-0.11/master_key", policy])
+    p = subprocess.call(["cpabe-keygen", "-o","./cpabe_keys/{}_priv_key".format(id),"pub_key","cpabe-0.11/master_key", policy])
 #p = subprocess.call(["mv", "{}_key.txt.cpabe".format(id), "{}_key.txt".format(id)])
-#decrypt("p00011")
+decrypt("./patientCloud/p01000.txt.cpabe")
 #encrypt_text("p00010")
 # policyarray = ["dataowner","medicalstaff","a","b","c","d","e","f","g","h"]
 # inputpolicy = ""
