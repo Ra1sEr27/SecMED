@@ -7,7 +7,7 @@
     - Use of Homomorphic encryption to create an additional key which is used to enchance the confidentiality of digital signature.
     - Use of SHA-256 Hashing Algorithm to create an index of ciphertext.
   - System Diagrams
-    - System Model
+    - System Overview
 
       ![image](https://user-images.githubusercontent.com/94690219/183926103-a93729b3-2323-4406-bd31-ca3fc130d8bb.png)
     - Encryption
