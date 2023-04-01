@@ -9,7 +9,7 @@
   - System Diagrams
     - System Overview
 
-      ![image](https://user-images.githubusercontent.com/94690219/183926103-a93729b3-2323-4406-bd31-ca3fc130d8bb.png)
+      ![image](https://user-images.githubusercontent.com/94690219/229272626-f6180560-0d81-44c8-981c-7e0cf99a88f8.png)
     - Patient's data (Plaintext)
 
       ![image](https://user-images.githubusercontent.com/94690219/173511853-7f2c5aa0-54c3-486e-93a7-4ea6f5797d76.png)
