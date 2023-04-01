@@ -10,6 +10,9 @@
     - System Overview
 
       ![image](https://user-images.githubusercontent.com/94690219/183926103-a93729b3-2323-4406-bd31-ca3fc130d8bb.png)
+    - Patient's data (Plaintext)
+
+      ![image](https://user-images.githubusercontent.com/94690219/173511853-7f2c5aa0-54c3-486e-93a7-4ea6f5797d76.png)
     - Encryption
 
       ![image](https://user-images.githubusercontent.com/94690219/183926783-d1019d66-4570-4481-a06b-da8c1abc9aa9.png)
@@ -19,11 +22,7 @@
     - Auditing
 
       ![image](https://user-images.githubusercontent.com/94690219/183927700-061808f7-6065-4c8d-87bc-b08d3c534823.png)
-  - Data Structure of patient document
-    - Patient document (Plaintext)
-
-      ![image](https://user-images.githubusercontent.com/94690219/173511853-7f2c5aa0-54c3-486e-93a7-4ea6f5797d76.png)
-    - Patient document for storing on cloud (Ciphertext)
+    - Patient's data after encryption process (Ciphertext)
 
       ![image](https://user-images.githubusercontent.com/94690219/183928523-e03c23ec-cbe5-4925-a02c-a64a8ee4ec31.png)
       - MD_id  : a hash value of patient id which is used as an index for retrieving the document for the medicat treatment record of the patient.
