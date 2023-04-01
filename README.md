@@ -15,7 +15,7 @@
       ![image](https://user-images.githubusercontent.com/94690219/173511853-7f2c5aa0-54c3-486e-93a7-4ea6f5797d76.png)
     - Encryption
 
-      ![image](https://user-images.githubusercontent.com/94690219/183926783-d1019d66-4570-4481-a06b-da8c1abc9aa9.png)
+      ![Security project workflow](https://user-images.githubusercontent.com/94690219/229272462-71f836c7-0f08-4b9d-a4d2-e5275498ef5a.png)
     - Decryption
 
       ![image](https://user-images.githubusercontent.com/94690219/183926994-75e51236-f3fc-47d8-8b62-5abc8f4171f3.png)
