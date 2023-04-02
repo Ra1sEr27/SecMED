@@ -21,7 +21,7 @@
       ![image](https://user-images.githubusercontent.com/94690219/183926994-75e51236-f3fc-47d8-8b62-5abc8f4171f3.png)
     - Auditing
 
-      ![image](https://user-images.githubusercontent.com/94690219/183927700-061808f7-6065-4c8d-87bc-b08d3c534823.png)
+      ![image](https://user-images.githubusercontent.com/94690219/229345505-9ff98f5a-1c1b-4f27-9e8d-290973c79299.png)
     - Patient's data after encryption process (Ciphertext)
 
       ![image](https://user-images.githubusercontent.com/94690219/183928523-e03c23ec-cbe5-4925-a02c-a64a8ee4ec31.png)
